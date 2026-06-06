@@ -24,22 +24,27 @@ export function VenueCard({
   return (
     <Link
       href={`/venues/${venue.id}`}
-      className={`group block border-b border-line px-4 py-4 transition hover:bg-pitch-wash/50 ${
-        highlight ? "bg-gold-wash/60" : ""
+      className={`group block border-b border-line px-4 py-4 transition hover:bg-blue-wash/50 ${
+        highlight ? "bg-yellow-wash/60" : ""
       }`}
     >
       {highlight && (
-        <p className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-gold/20 px-2 py-0.5 text-xs font-bold text-gold-deep">
+        <p className="mb-1.5 inline-flex items-center gap-1.5 border border-ink bg-yellow px-2 py-0.5 text-xs font-bold text-ink">
+          <span
+            aria-hidden
+            className="inline-block h-0 w-0 border-x-[5px] border-b-[9px] border-x-transparent"
+            style={{ borderBottomColor: "var(--ink)" }}
+          />
           {highlight.flagEmoji} {highlight.teamName} plays here ·{" "}
           {highlight.kickoffLabel}
         </p>
       )}
       <div className="flex items-baseline justify-between gap-3">
-        <h3 className="font-bold text-ink group-hover:text-pitch-deep">
+        <h3 className="font-bold text-ink group-hover:text-blue-deep">
           {venue.name}
         </h3>
         {distanceKm !== null ? (
-          <span className="scoreboard shrink-0 text-xs text-pitch-deep">
+          <span className="scoreboard shrink-0 text-xs text-blue-deep">
             {formatDistanceKm(distanceKm)}
           </span>
         ) : (
@@ -54,19 +59,19 @@ export function VenueCard({
         {venue.city}, {venue.country}
       </p>
       <p className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
-        <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+        <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
           {VENUE_TYPE_LABELS[venue.venue_type]}
         </span>
-        <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+        <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
           {INDOOR_OUTDOOR_LABELS[venue.indoor_outdoor]}
         </span>
         {venue.is_free_entry && (
-          <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
             Free entry
           </span>
         )}
         {venue.big_screen && (
-          <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
             Big screen
           </span>
         )}

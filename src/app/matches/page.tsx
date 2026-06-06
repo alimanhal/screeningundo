@@ -40,7 +40,7 @@ export default async function MatchesPage() {
           <>
             {" "}
             Your team{" "}
-            <strong className="text-gold-deep">
+            <strong className="text-yellow-deep">
               {teamsByCode.get(favorite)!.flag_emoji}{" "}
               {teamsByCode.get(favorite)!.name}
             </strong>{" "}
@@ -48,10 +48,10 @@ export default async function MatchesPage() {
           </>
         )}
       </p>
-      <div className="pitch-divider my-6" />
+      <div className="bauhaus-rule my-6" />
 
       {byDate.size === 0 && (
-        <p className="rounded-xl border border-line bg-paper-raised px-4 py-8 text-center text-sm text-ink-faint">
+        <p className="rounded-none border border-line bg-surface px-4 py-8 text-center text-sm text-ink-faint">
           The match schedule hasn&apos;t been loaded yet — run the seed
           scripts in <code>supabase/seed/</code>.
         </p>
@@ -60,10 +60,10 @@ export default async function MatchesPage() {
       <div className="space-y-8">
         {[...byDate.entries()].map(([day, dayMatches]) => (
           <section key={day}>
-            <h2 className="display text-sm tracking-wide text-pitch-deep">
+            <h2 className="display text-sm tracking-wide text-blue-deep">
               {day}
             </h2>
-            <ul className="mt-2 divide-y divide-line rounded-xl border border-line bg-paper-raised">
+            <ul className="mt-2 divide-y divide-line rounded-none border border-line bg-surface">
               {dayMatches.map((m) => (
                 <MatchRowItem
                   key={m.id}
@@ -106,16 +106,16 @@ function MatchRowItem({
   }).format(new Date(match.kickoff_utc));
 
   return (
-    <li className={isFavMatch ? "bg-gold-wash/70" : ""}>
+    <li className={isFavMatch ? "bg-yellow-wash/70" : ""}>
       <Link
         href={`/matches/${match.id}`}
-        className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 transition hover:bg-pitch-wash/50"
+        className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 transition hover:bg-blue-wash/50"
       >
-        <span className="scoreboard w-14 shrink-0 text-sm text-pitch-deep">
+        <span className="scoreboard w-14 shrink-0 text-sm text-blue-deep">
           {time}
         </span>
         <span className="min-w-0 flex-1 font-semibold text-ink">
-          {isFavMatch && <span className="mr-1 text-gold-deep">⭐</span>}
+          {isFavMatch && <span className="mr-1 text-yellow-deep">⭐</span>}
           {side(match.home_team)}{" "}
           <span className="font-normal text-ink-faint">vs</span>{" "}
           {side(match.away_team)}
@@ -123,7 +123,7 @@ function MatchRowItem({
         <span className="hidden text-xs text-ink-faint sm:block">
           {STAGE_LABELS[match.stage]} · {match.city}
         </span>
-        <span className="text-sm font-semibold text-pitch-deep">
+        <span className="text-sm font-semibold text-blue-deep">
           Where to watch →
         </span>
       </Link>

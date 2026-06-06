@@ -8,7 +8,7 @@ const VenueMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full items-center justify-center bg-pitch-wash text-sm text-ink-faint">
+      <div className="flex h-full items-center justify-center bg-blue-wash text-sm text-ink-faint">
         Loading map…
       </div>
     ),

@@ -24,10 +24,15 @@ Next.js 16 (App Router, `src/`, `@/*` alias, Tailwind 4) + Supabase
 
 ## Theme
 
-"Matchday signage": tokens in `src/app/globals.css` (`--pitch`, `--gold`,
-`--ink`, `--paper`, oklch). Gold is reserved for favorite-team moments.
-Utility classes: `.display` (signage headings), `.scoreboard` (tabular nums),
-`.pitch-divider`.
+**Bauhaus** — `docs/DESIGN.md` is the source of truth; conform every UI
+change to it. Tokens in `src/app/globals.css` (`--red`, `--blue`,
+`--yellow`, `--ink`, `--paper`, `--surface`, oklch). Shape coding: venue =
+red circle, favorite/pending = yellow triangle, structure/approved = blue
+square. Hard edges only (`rounded-none`), 2px ink borders on interactive
+elements, `.press` hover (hard offset shadow), no gradients/soft shadows.
+Utility classes: `.display`, `.scoreboard`, `.bauhaus-rule`. Font: Jost
+(self-hosted via Fontsource). Mobile-first: ≥44px touch targets, 16px
+inputs below `sm` (iOS zoom).
 
 ## Commands
 

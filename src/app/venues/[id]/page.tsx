@@ -95,10 +95,10 @@ export default async function VenuePage({ params }: Props) {
     <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
       {isOwner && venue.status !== "approved" && (
         <div
-          className={`mb-6 rounded-xl px-4 py-3 text-sm ${
+          className={`mb-6 rounded-none px-4 py-3 text-sm ${
             venue.status === "pending"
-              ? "bg-gold-wash text-gold-deep"
-              : "bg-danger-wash text-danger"
+              ? "bg-yellow-wash text-yellow-deep"
+              : "bg-red-wash text-red"
           }`}
         >
           {venue.status === "pending" ? (
@@ -134,34 +134,34 @@ export default async function VenuePage({ params }: Props) {
       </div>
 
       <p className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
-        <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+        <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
           {VENUE_TYPE_LABELS[venue.venue_type]}
         </span>
-        <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+        <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
           {INDOOR_OUTDOOR_LABELS[venue.indoor_outdoor]}
         </span>
         {venue.is_free_entry && (
-          <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
             Free entry
           </span>
         )}
         {venue.big_screen && (
-          <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
             Big screen
           </span>
         )}
         {venue.food_available && (
-          <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
             Food
           </span>
         )}
         {venue.family_friendly && (
-          <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
             Family friendly
           </span>
         )}
         {venue.capacity_estimate && (
-          <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
             ~{venue.capacity_estimate.toLocaleString()} people
           </span>
         )}
@@ -175,7 +175,7 @@ export default async function VenuePage({ params }: Props) {
 
           <h2 className="display mt-8 text-lg text-ink">Matches screened</h2>
           {venue.screens_all_matches ? (
-            <p className="mt-2 rounded-lg bg-pitch-wash/60 px-3 py-2 text-sm text-pitch-deep">
+            <p className="mt-2 rounded-none bg-blue-wash/60 px-3 py-2 text-sm text-blue-deep">
               ⚽ Screening <strong>all matches</strong> of the tournament.
             </p>
           ) : screenedMatches.length === 0 ? (
@@ -183,7 +183,7 @@ export default async function VenuePage({ params }: Props) {
               No specific matches listed.
             </p>
           ) : (
-            <ul className="mt-2 divide-y divide-line rounded-xl border border-line">
+            <ul className="mt-2 divide-y divide-line rounded-none border border-line">
               {screenedMatches.map((m) => (
                 <li
                   key={m.id}
@@ -201,7 +201,7 @@ export default async function VenuePage({ params }: Props) {
 
         <div className="space-y-4">
           {venue.photo_url && (
-            <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-line">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-none border border-line">
               <Image
                 src={venue.photo_url}
                 alt={venue.name}
@@ -212,14 +212,14 @@ export default async function VenuePage({ params }: Props) {
               />
             </div>
           )}
-          <div className="h-56 overflow-hidden rounded-xl border border-line">
+          <div className="h-56 overflow-hidden rounded-none border border-line">
             <MiniMap venue={venue} />
           </div>
           <a
             href={`https://www.openstreetmap.org/?mlat=${venue.lat}&mlon=${venue.lng}#map=17/${venue.lat}/${venue.lng}`}
             target="_blank"
             rel="noreferrer"
-            className="block text-center text-sm font-semibold text-pitch-deep underline"
+            className="block text-center text-sm font-semibold text-blue-deep underline"
           >
             Open in OpenStreetMap →
           </a>

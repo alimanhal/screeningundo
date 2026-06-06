@@ -8,12 +8,13 @@ import {
   TileLayer,
   Marker,
   Popup,
-  CircleMarker,
   useMap,
 } from "react-leaflet";
 import type { LatLng, VenueListItem } from "@/lib/venues";
 import { VENUE_TYPE_LABELS } from "@/lib/venues";
 
+// Shape-coded pins (docs/DESIGN.md §4): venue = red circle,
+// favorite-team highlight = yellow circle with ink ring.
 const pinIcon = (highlighted: boolean) =>
   L.divIcon({
     className: "",
@@ -21,11 +22,21 @@ const pinIcon = (highlighted: boolean) =>
     iconAnchor: [9, 9],
     html: `<span style="
       display:block;width:18px;height:18px;border-radius:9999px;
-      background:${highlighted ? "var(--gold)" : "var(--pitch)"};
-      border:2.5px solid var(--paper-raised);
-      box-shadow:0 1px 4px rgb(0 0 0 / 0.35);
+      background:${highlighted ? "var(--yellow)" : "var(--red)"};
+      border:2px solid var(--ink);
     "></span>`,
   });
+
+// User location = blue square (docs/DESIGN.md §4).
+const userIcon = L.divIcon({
+  className: "",
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+  html: `<span style="
+    display:block;width:14px;height:14px;
+    background:var(--blue);border:2px solid var(--ink);
+  "></span>`,
+});
 
 /** Re-centers the map when the focus target changes. */
 function FlyTo({ target, zoom }: { target: LatLng | null; zoom: number }) {
@@ -70,15 +81,9 @@ export function VenueMap({
       />
       <FlyTo target={focus} zoom={focusZoom} />
       {userLocation && (
-        <CircleMarker
-          center={[userLocation.lat, userLocation.lng]}
-          radius={7}
-          pathOptions={{
-            color: "var(--paper-raised)",
-            weight: 2.5,
-            fillColor: "var(--ink)",
-            fillOpacity: 1,
-          }}
+        <Marker
+          position={[userLocation.lat, userLocation.lng]}
+          icon={userIcon}
         />
       )}
       {venues.map((venue) => (

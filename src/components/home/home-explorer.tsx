@@ -19,7 +19,7 @@ const VenueMap = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-full w-full items-center justify-center bg-pitch-wash text-sm text-ink-faint">
+      <div className="flex h-full w-full items-center justify-center bg-blue-wash text-sm text-ink-faint">
         Loading map…
       </div>
     ),
@@ -88,7 +88,7 @@ export function HomeExplorer({
 
   return (
     <div className="grid flex-1 grid-rows-[minmax(260px,40svh)_1fr] lg:grid-cols-[minmax(360px,440px)_1fr] lg:grid-rows-1">
-      <section className="order-2 flex min-h-0 flex-col overflow-hidden border-line lg:order-1 lg:border-r">
+      <section className="order-2 flex min-h-0 flex-col overflow-hidden border-ink lg:order-1 lg:border-r-2">
         <FilterBar
           filters={filters}
           onChange={setFilters}
@@ -106,7 +106,7 @@ export function HomeExplorer({
               <p className="font-semibold text-ink">No venues match.</p>
               <p className="mt-1 text-sm text-ink-soft">
                 Try clearing a filter — or{" "}
-                <a href="/submit" className="text-pitch-deep underline">
+                <a href="/submit" className="text-blue-deep underline">
                   add the first screening spot here
                 </a>
                 .

@@ -70,7 +70,7 @@ export default async function MatchPage({ params }: Props) {
     <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8">
       <Link
         href="/matches"
-        className="text-sm font-semibold text-pitch-deep hover:underline"
+        className="text-sm font-semibold text-blue-deep hover:underline"
       >
         ← All matches
       </Link>
@@ -81,27 +81,27 @@ export default async function MatchPage({ params }: Props) {
         {STAGE_LABELS[match.stage]} · {formatKickoff(match.kickoff_utc)} ·{" "}
         {match.stadium}, {match.city}
       </p>
-      <div className="pitch-divider my-6" />
+      <div className="bauhaus-rule my-6" />
 
-      <h2 className="display text-sm tracking-wide text-pitch-deep">
+      <h2 className="display text-sm tracking-wide text-blue-deep">
         {venues.length}{" "}
         {venues.length === 1 ? "place is screening" : "places are screening"}{" "}
         this match
       </h2>
 
       {venues.length === 0 ? (
-        <div className="mt-4 rounded-xl border border-line bg-paper-raised px-4 py-10 text-center">
+        <div className="mt-4 rounded-none border border-line bg-surface px-4 py-10 text-center">
           <p className="font-semibold text-ink">No venues yet.</p>
           <p className="mt-1 text-sm text-ink-soft">
             Know a place showing this match?{" "}
-            <Link href="/submit" className="text-pitch-deep underline">
+            <Link href="/submit" className="text-blue-deep underline">
               Add it
             </Link>{" "}
             and help fellow fans.
           </p>
         </div>
       ) : (
-        <div className="mt-2 overflow-hidden rounded-xl border border-line bg-paper-raised">
+        <div className="mt-2 overflow-hidden rounded-none border border-line bg-surface">
           {venues.map((venue) => (
             <VenueCard
               key={venue.id}

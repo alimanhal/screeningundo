@@ -46,10 +46,10 @@ export function VenueActions({
             onClick={handleVote}
             disabled={isPending}
             aria-pressed={hasVoted}
-            className={`scoreboard rounded-full px-3 py-1.5 text-sm transition disabled:opacity-60 ${
+            className={`scoreboard rounded-none px-3.5 py-2 text-sm transition disabled:opacity-60 ${
               hasVoted
-                ? "bg-pitch text-paper"
-                : "bg-pitch-wash text-pitch-deep hover:bg-pitch hover:text-paper"
+                ? "bg-blue text-paper"
+                : "bg-blue-wash text-blue-deep hover:bg-blue hover:text-paper"
             }`}
             title={hasVoted ? "Remove upvote" : "Upvote this venue"}
           >
@@ -58,7 +58,7 @@ export function VenueActions({
         ) : (
           <Link
             href={`/login?next=${encodeURIComponent(`/venues/${venueId}`)}`}
-            className="scoreboard rounded-full bg-pitch-wash px-3 py-1.5 text-sm text-pitch-deep transition hover:bg-pitch hover:text-paper"
+            className="scoreboard rounded-none bg-blue-wash px-3.5 py-2 text-sm text-blue-deep transition hover:bg-blue hover:text-paper"
             title="Sign in to upvote"
           >
             ▲ {displayCount}
@@ -70,7 +70,7 @@ export function VenueActions({
             setReportOpen((o) => !o);
             setReportResult(null);
           }}
-          className="rounded-full border border-line-strong px-3 py-1.5 text-sm font-semibold text-ink-soft transition hover:border-danger hover:text-danger"
+          className="rounded-none border border-ink px-3.5 py-2 text-sm font-semibold text-ink-soft transition hover:border-red hover:text-red"
         >
           Report
         </button>
@@ -80,14 +80,14 @@ export function VenueActions({
         (isSignedIn ? (
           <form
             action={handleReport}
-            className="mt-3 space-y-2 rounded-xl border border-line bg-paper-raised p-3"
+            className="mt-3 space-y-2 rounded-none border border-line bg-surface p-3"
           >
             <label className="block text-xs font-semibold text-ink">
               What&apos;s wrong?
               <select
                 name="reason"
                 required
-                className="mt-1 w-full rounded-lg border border-line-strong bg-paper px-2 py-1.5 text-sm font-normal"
+                className="mt-1 w-full rounded-none border border-ink bg-paper px-2 py-1.5 text-sm font-normal"
               >
                 <option value="outdated">Outdated info</option>
                 <option value="wrong_info">Wrong info</option>
@@ -101,12 +101,12 @@ export function VenueActions({
               rows={2}
               maxLength={500}
               placeholder="Details (optional)"
-              className="w-full rounded-lg border border-line-strong bg-paper px-2 py-1.5 text-sm"
+              className="w-full rounded-none border border-ink bg-paper px-2 py-1.5 text-sm"
             />
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-lg bg-danger px-3 py-1.5 text-sm font-semibold text-paper transition hover:opacity-90 disabled:opacity-60"
+              className="rounded-none bg-red px-3.5 py-2 text-sm font-semibold text-paper transition hover:opacity-90 disabled:opacity-60"
             >
               {isPending ? "Sending…" : "Send report"}
             </button>
@@ -115,7 +115,7 @@ export function VenueActions({
           <p className="mt-2 text-xs text-ink-faint">
             <Link
               href={`/login?next=${encodeURIComponent(`/venues/${venueId}`)}`}
-              className="text-pitch-deep underline"
+              className="text-blue-deep underline"
             >
               Sign in
             </Link>{" "}
@@ -125,7 +125,7 @@ export function VenueActions({
 
       {reportResult && (
         <p
-          className={`mt-2 text-xs ${reportResult.ok ? "text-pitch-deep" : "text-danger"}`}
+          className={`mt-2 text-xs ${reportResult.ok ? "text-blue-deep" : "text-red"}`}
         >
           {reportResult.message}
         </p>

@@ -20,7 +20,7 @@ export default async function SubmitPage() {
         Know a fan zone, pub or plaza showing the matches? Add it below —
         submissions are reviewed before they appear publicly.
       </p>
-      <div className="pitch-divider my-6" />
+      <div className="bauhaus-rule my-6" />
       <SubmitForm matches={matches ?? []} teams={teams ?? []} />
     </main>
   );
