@@ -81,16 +81,16 @@ export default async function MatchPage({ params }: Props) {
         {STAGE_LABELS[match.stage]} · {formatKickoff(match.kickoff_utc)} ·{" "}
         {match.stadium}, {match.city}
       </p>
-      <div className="bauhaus-rule my-6" />
+      <div className="rule my-6" />
 
-      <h2 className="display text-sm tracking-wide text-blue-deep">
+      <h2 className="text-sm font-semibold text-ink-faint">
         {venues.length}{" "}
         {venues.length === 1 ? "place is screening" : "places are screening"}{" "}
         this match
       </h2>
 
       {venues.length === 0 ? (
-        <div className="mt-4 rounded-none border border-line bg-surface px-4 py-10 text-center">
+        <div className="mt-4 rounded-2xl border border-line bg-surface px-4 py-10 text-center">
           <p className="font-semibold text-ink">No venues yet.</p>
           <p className="mt-1 text-sm text-ink-soft">
             Know a place showing this match?{" "}
@@ -101,7 +101,7 @@ export default async function MatchPage({ params }: Props) {
           </p>
         </div>
       ) : (
-        <div className="mt-2 overflow-hidden rounded-none border border-line bg-surface">
+        <div className="mt-2 overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)]">
           {venues.map((venue) => (
             <VenueCard
               key={venue.id}

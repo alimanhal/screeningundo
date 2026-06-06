@@ -28,7 +28,7 @@ const LocationPicker = dynamic(
 );
 
 const inputClass =
-  "mt-1 w-full rounded-none border border-ink bg-paper px-3 py-2 text-base text-ink outline-none sm:text-sm placeholder:text-ink-faint focus:border-blue focus:ring-2 focus:ring-blue/15";
+  "mt-1 w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-base text-ink outline-none placeholder:text-ink-faint focus:border-blue focus:ring-2 focus:ring-blue/15 sm:text-sm";
 const labelClass = "block text-sm font-semibold text-ink";
 
 export function SubmitForm({
@@ -189,8 +189,8 @@ export function SubmitForm({
 
   if (state === "done") {
     return (
-      <div className="rounded-none border border-line bg-blue-wash/60 p-8 text-center">
-        <p className="display text-xl text-blue-deep">Submitted ⚽</p>
+      <div className="rounded-xl border border-line bg-blue-wash/60 p-8 text-center">
+        <p className="display text-xl text-blue-deep">Submitted</p>
         <p className="mx-auto mt-2 max-w-md text-sm text-ink-soft">
           Thanks! Your venue is now <strong>pending review</strong>. It will
           appear publicly once a moderator approves it — track its status in{" "}
@@ -283,7 +283,7 @@ export function SubmitForm({
         </fieldset>
       </div>
 
-      <div className="bauhaus-rule" />
+      <div className="rule" />
 
       {/* Location */}
       <div>
@@ -301,7 +301,7 @@ export function SubmitForm({
             className={inputClass}
           />
           {searchResults.length > 0 && (
-            <ul className="absolute z-[1200] mt-1 w-full overflow-hidden rounded-none border border-line bg-surface shadow-lg">
+            <ul className="absolute z-[1200] mt-1 w-full overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)] shadow-lg">
               {searchResults.map((r) => (
                 <li key={`${r.lat},${r.lng}`}>
                   <button
@@ -316,7 +316,7 @@ export function SubmitForm({
             </ul>
           )}
         </div>
-        <div className="mt-2 h-72 overflow-hidden rounded-none border border-line">
+        <div className="mt-2 h-72 overflow-hidden rounded-2xl border border-line">
           <LocationPicker
             value={position}
             onChange={setPosition}
@@ -344,7 +344,7 @@ export function SubmitForm({
         </div>
       </div>
 
-      <div className="bauhaus-rule" />
+      <div className="rule" />
 
       {/* Matches */}
       <div>
@@ -353,10 +353,10 @@ export function SubmitForm({
           <button
             type="button"
             onClick={() => setScreensAll(true)}
-            className={`rounded-none px-3 py-1.5 font-semibold transition ${
+            className={`rounded-xl px-3 py-1.5 font-semibold transition ${
               screensAll
-                ? "bg-blue-deep text-paper"
-                : "border border-ink text-ink-soft"
+                ? "bg-ink text-surface"
+                : "border border-line bg-surface text-ink-soft"
             }`}
           >
             All matches
@@ -364,17 +364,17 @@ export function SubmitForm({
           <button
             type="button"
             onClick={() => setScreensAll(false)}
-            className={`rounded-none px-3 py-1.5 font-semibold transition ${
+            className={`rounded-xl px-3 py-1.5 font-semibold transition ${
               !screensAll
-                ? "bg-blue-deep text-paper"
-                : "border border-ink text-ink-soft"
+                ? "bg-ink text-surface"
+                : "border border-line bg-surface text-ink-soft"
             }`}
           >
             Specific matches
           </button>
         </div>
         {!screensAll && (
-          <div className="mt-3 max-h-64 overflow-y-auto rounded-none border border-line">
+          <div className="mt-3 max-h-64 overflow-y-auto rounded-xl border border-line">
             {matches.map((m) => (
               <label
                 key={m.id}
@@ -398,7 +398,7 @@ export function SubmitForm({
         )}
       </div>
 
-      <div className="bauhaus-rule" />
+      <div className="rule" />
 
       {/* Photo */}
       <label className={labelClass}>
@@ -407,7 +407,7 @@ export function SubmitForm({
           type="file"
           accept="image/jpeg,image/png,image/webp"
           onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-          className="mt-1 block w-full text-sm text-ink-soft file:mr-3 file:rounded-none file:border-0 file:bg-blue-wash file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-blue-deep"
+          className="mt-1 block w-full text-sm text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-blue-wash file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-blue-deep"
         />
         <span className="mt-1 block text-xs font-normal text-ink-faint">
           Compressed in your browser before upload.
@@ -415,7 +415,7 @@ export function SubmitForm({
       </label>
 
       {error && (
-        <p className="rounded-none bg-red-wash px-3 py-2 text-sm text-red">
+        <p className="rounded-xl bg-red-wash px-3 py-2 text-sm text-red">
           {error}
         </p>
       )}
@@ -423,7 +423,7 @@ export function SubmitForm({
       <button
         type="submit"
         disabled={state === "saving"}
-        className="press w-full border-2 border-ink bg-red px-4 py-3 font-bold text-paper disabled:opacity-60 sm:w-auto sm:px-8"
+        className="press w-full rounded-full bg-ink px-4 py-3 font-semibold text-surface disabled:opacity-60 sm:w-auto sm:px-8"
       >
         {state === "saving" ? "Submitting…" : "Submit for review"}
       </button>

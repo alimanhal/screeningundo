@@ -24,7 +24,7 @@ export function ShareButton({ title }: { title: string }) {
     <button
       type="button"
       onClick={handleShare}
-      className="rounded-none border border-ink px-3.5 py-2 text-sm font-semibold text-ink-soft transition hover:border-blue hover:text-blue-deep"
+      className="rounded-xl border border-line px-3.5 py-2 text-sm font-semibold text-ink-soft transition hover:border-blue hover:text-blue-deep"
     >
       {copied ? "Link copied ✓" : "Share"}
     </button>

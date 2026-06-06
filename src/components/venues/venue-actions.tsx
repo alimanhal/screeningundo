@@ -46,10 +46,10 @@ export function VenueActions({
             onClick={handleVote}
             disabled={isPending}
             aria-pressed={hasVoted}
-            className={`scoreboard rounded-none px-3.5 py-2 text-sm transition disabled:opacity-60 ${
+            className={`scoreboard rounded-xl px-3.5 py-2 text-sm transition disabled:opacity-60 ${
               hasVoted
-                ? "bg-blue text-paper"
-                : "bg-blue-wash text-blue-deep hover:bg-blue hover:text-paper"
+                ? "bg-blue text-surface"
+                : "bg-blue-wash text-blue-deep hover:bg-blue/15"
             }`}
             title={hasVoted ? "Remove upvote" : "Upvote this venue"}
           >
@@ -58,7 +58,7 @@ export function VenueActions({
         ) : (
           <Link
             href={`/login?next=${encodeURIComponent(`/venues/${venueId}`)}`}
-            className="scoreboard rounded-none bg-blue-wash px-3.5 py-2 text-sm text-blue-deep transition hover:bg-blue hover:text-paper"
+            className="scoreboard rounded-xl bg-blue-wash px-3.5 py-2 text-sm text-blue-deep transition hover:bg-blue hover:text-surface"
             title="Sign in to upvote"
           >
             ▲ {displayCount}
@@ -70,7 +70,7 @@ export function VenueActions({
             setReportOpen((o) => !o);
             setReportResult(null);
           }}
-          className="rounded-none border border-ink px-3.5 py-2 text-sm font-semibold text-ink-soft transition hover:border-red hover:text-red"
+          className="rounded-xl border border-line px-3.5 py-2 text-sm font-semibold text-ink-soft transition hover:border-red hover:text-red"
         >
           Report
         </button>
@@ -80,14 +80,14 @@ export function VenueActions({
         (isSignedIn ? (
           <form
             action={handleReport}
-            className="mt-3 space-y-2 rounded-none border border-line bg-surface p-3"
+            className="mt-3 space-y-2 rounded-2xl border border-line bg-surface p-3 shadow-[var(--shadow-card)]"
           >
             <label className="block text-xs font-semibold text-ink">
               What&apos;s wrong?
               <select
                 name="reason"
                 required
-                className="mt-1 w-full rounded-none border border-ink bg-paper px-2 py-1.5 text-sm font-normal"
+                className="mt-1 w-full rounded-xl border border-line bg-paper px-2 py-1.5 text-sm font-normal"
               >
                 <option value="outdated">Outdated info</option>
                 <option value="wrong_info">Wrong info</option>
@@ -101,12 +101,12 @@ export function VenueActions({
               rows={2}
               maxLength={500}
               placeholder="Details (optional)"
-              className="w-full rounded-none border border-ink bg-paper px-2 py-1.5 text-sm"
+              className="w-full rounded-xl border border-line bg-paper px-2 py-1.5 text-sm"
             />
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-none bg-red px-3.5 py-2 text-sm font-semibold text-paper transition hover:opacity-90 disabled:opacity-60"
+              className="rounded-xl bg-red px-3.5 py-2 text-sm font-semibold text-surface transition hover:opacity-90 disabled:opacity-60"
             >
               {isPending ? "Sending…" : "Send report"}
             </button>

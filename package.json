@@ -10,7 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@fontsource-variable/jost": "^5.2.8",
+    "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.107.0",
     "leaflet": "^1.9.4",

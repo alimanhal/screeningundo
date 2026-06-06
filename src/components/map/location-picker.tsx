@@ -4,14 +4,15 @@ import L from "leaflet";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import type { LatLng } from "@/lib/venues";
 
-// Picked spot = red circle (docs/DESIGN.md §4).
+// Picked spot = accent dot with white ring.
 const pickerIcon = L.divIcon({
   className: "",
   iconSize: [22, 22],
   iconAnchor: [11, 11],
   html: `<span style="
     display:block;width:22px;height:22px;border-radius:9999px;
-    background:var(--red);border:2px solid var(--ink);
+    background:var(--blue);border:3px solid var(--surface);
+    box-shadow:0 1px 6px rgb(0 0 0 / 0.35);
   "></span>`,
 });
 

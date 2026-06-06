@@ -37,27 +37,16 @@ export default async function HomePage() {
 
   return (
     <main className="flex flex-1 flex-col">
-      <section className="border-b-2 border-ink bg-surface px-4 py-8">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6">
-          <div>
-            <h1 className="display max-w-3xl text-3xl leading-tight text-ink sm:text-4xl">
-              Where to watch the <span className="text-red">2026</span> World
-              Cup <span className="text-blue">near you</span>
-            </h1>
-            <p className="mt-2 max-w-xl text-sm text-ink-soft">
-              Fan zones, pubs and public squares screening the matches —
-              submitted by fans, verified before they go live.
-            </p>
-          </div>
-          {/* Poster composition: the three primitives, stacked off-grid */}
-          <div aria-hidden className="relative hidden h-24 w-28 shrink-0 md:block">
-            <span className="absolute left-0 top-1 h-16 w-16 rounded-full border-2 border-ink bg-red" />
-            <span className="absolute bottom-0 right-6 h-12 w-12 border-2 border-ink bg-blue" />
-            <span
-              className="absolute right-0 top-0 h-0 w-0 border-x-[26px] border-b-[46px] border-x-transparent"
-              style={{ borderBottomColor: "var(--yellow)" }}
-            />
-          </div>
+      <section className="border-b border-line bg-surface px-4 py-8 sm:py-10">
+        <div className="mx-auto w-full max-w-6xl">
+          <h1 className="display max-w-2xl text-3xl leading-tight text-ink sm:text-4xl">
+            Find a place to watch,{" "}
+            <span className="text-blue">wherever you are</span>
+          </h1>
+          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
+            Community-curated screening locations for the 2026 tournament —
+            submitted by fans, reviewed before they go live.
+          </p>
         </div>
       </section>
       <HomeExplorer venues={venues} favorite={favorite} />

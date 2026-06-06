@@ -74,7 +74,7 @@ for admin priority.
 Fixture data is seeded from [openfootball](https://github.com/openfootball/worldcup);
 verify kickoff times against FIFA if timing is critical.
 
-**Design:** Bauhaus — primary red/blue/yellow as functional signals,
-geometric shape coding, hard edges, Jost typeface. See `docs/DESIGN.md`.
+**Design:** Modern Minimal — typography-led, whitespace-driven, single
+blue accent, soft elevation, Plus Jakarta Sans. See `docs/DESIGN.md`.
 
 *Not affiliated with FIFA. Map data © OpenStreetMap contributors.*

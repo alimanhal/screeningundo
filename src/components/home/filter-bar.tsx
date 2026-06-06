@@ -31,7 +31,7 @@ export function FilterBar({
   nearMeState: "idle" | "locating" | "active" | "error";
 }) {
   return (
-    <div className="flex flex-col gap-2 border-b-2 border-ink bg-surface px-4 py-3">
+    <div className="flex flex-col gap-2 border-b border-line bg-surface px-4 py-3">
       <div className="flex gap-2">
         <input
           type="search"
@@ -39,16 +39,16 @@ export function FilterBar({
           onChange={(e) => onChange({ ...filters, q: e.target.value })}
           placeholder="Search by name, city or country…"
           aria-label="Search venues"
-          className="w-full rounded-none border border-ink bg-paper px-3 py-2 text-base text-ink outline-none sm:text-sm placeholder:text-ink-faint focus:border-blue focus:ring-2 focus:ring-blue/15"
+          className="w-full rounded-xl border border-line bg-surface px-3 py-2 text-base text-ink outline-none placeholder:text-ink-faint focus:border-blue focus:ring-2 focus:ring-blue/15 sm:text-sm"
         />
         <button
           type="button"
           onClick={onNearMe}
           disabled={nearMeState === "locating"}
-          className={`shrink-0 rounded-none px-3 py-2 text-sm font-semibold transition disabled:opacity-60 ${
+          className={`press shrink-0 rounded-full px-3.5 py-2 text-sm font-semibold disabled:opacity-60 ${
             nearMeState === "active"
-              ? "bg-blue text-paper"
-              : "border border-ink text-ink-soft hover:border-blue hover:text-blue-deep"
+              ? "bg-ink text-surface"
+              : "border border-line bg-surface text-ink-soft"
           }`}
         >
           {nearMeState === "locating" ? "Locating…" : "📍 Near me"}
@@ -65,7 +65,7 @@ export function FilterBar({
             })
           }
           aria-label="Venue type"
-          className="rounded-none border border-ink bg-paper px-3 py-1.5 font-semibold text-ink-soft outline-none focus:border-blue"
+          className="rounded-full border border-line bg-surface px-3 py-1.5 font-semibold text-ink-soft outline-none focus:border-blue"
         >
           <option value="all">All types</option>
           {Object.entries(VENUE_TYPE_LABELS).map(([value, label]) => (
@@ -84,7 +84,7 @@ export function FilterBar({
             })
           }
           aria-label="Indoor or outdoor"
-          className="rounded-none border border-ink bg-paper px-3 py-1.5 font-semibold text-ink-soft outline-none focus:border-blue"
+          className="rounded-full border border-line bg-surface px-3 py-1.5 font-semibold text-ink-soft outline-none focus:border-blue"
         >
           <option value="all">Indoor + outdoor</option>
           <option value="indoor">Indoor</option>
@@ -97,10 +97,10 @@ export function FilterBar({
             type="button"
             aria-pressed={filters[key]}
             onClick={() => onChange({ ...filters, [key]: !filters[key] })}
-            className={`rounded-none px-3 py-1.5 font-semibold transition ${
+            className={`rounded-full px-3 py-1.5 font-semibold transition ${
               filters[key]
-                ? "bg-blue-deep text-paper"
-                : "border border-ink text-ink-soft hover:border-blue hover:text-blue-deep"
+                ? "bg-ink text-surface"
+                : "border border-line bg-surface text-ink-soft hover:border-ink-faint"
             }`}
           >
             {label}

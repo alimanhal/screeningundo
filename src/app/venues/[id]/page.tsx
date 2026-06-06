@@ -95,7 +95,7 @@ export default async function VenuePage({ params }: Props) {
     <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
       {isOwner && venue.status !== "approved" && (
         <div
-          className={`mb-6 rounded-none px-4 py-3 text-sm ${
+          className={`mb-6 rounded-xl px-4 py-3 text-sm ${
             venue.status === "pending"
               ? "bg-yellow-wash text-yellow-deep"
               : "bg-red-wash text-red"
@@ -133,35 +133,35 @@ export default async function VenuePage({ params }: Props) {
         </div>
       </div>
 
-      <p className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
-        <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+      <p className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-medium">
+        <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
           {VENUE_TYPE_LABELS[venue.venue_type]}
         </span>
-        <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+        <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
           {INDOOR_OUTDOOR_LABELS[venue.indoor_outdoor]}
         </span>
         {venue.is_free_entry && (
-          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
             Free entry
           </span>
         )}
         {venue.big_screen && (
-          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
             Big screen
           </span>
         )}
         {venue.food_available && (
-          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
             Food
           </span>
         )}
         {venue.family_friendly && (
-          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
             Family friendly
           </span>
         )}
         {venue.capacity_estimate && (
-          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
             ~{venue.capacity_estimate.toLocaleString()} people
           </span>
         )}
@@ -175,15 +175,15 @@ export default async function VenuePage({ params }: Props) {
 
           <h2 className="display mt-8 text-lg text-ink">Matches screened</h2>
           {venue.screens_all_matches ? (
-            <p className="mt-2 rounded-none bg-blue-wash/60 px-3 py-2 text-sm text-blue-deep">
-              ⚽ Screening <strong>all matches</strong> of the tournament.
+            <p className="mt-2 rounded-xl bg-blue-wash/60 px-3 py-2 text-sm text-blue-deep">
+              Screening <strong>all matches</strong> of the tournament.
             </p>
           ) : screenedMatches.length === 0 ? (
             <p className="mt-2 text-sm text-ink-faint">
               No specific matches listed.
             </p>
           ) : (
-            <ul className="mt-2 divide-y divide-line rounded-none border border-line">
+            <ul className="mt-2 divide-y divide-line overflow-hidden rounded-2xl border border-line">
               {screenedMatches.map((m) => (
                 <li
                   key={m.id}
@@ -201,7 +201,7 @@ export default async function VenuePage({ params }: Props) {
 
         <div className="space-y-4">
           {venue.photo_url && (
-            <div className="relative aspect-[4/3] overflow-hidden rounded-none border border-line">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line">
               <Image
                 src={venue.photo_url}
                 alt={venue.name}
@@ -212,7 +212,7 @@ export default async function VenuePage({ params }: Props) {
               />
             </div>
           )}
-          <div className="h-56 overflow-hidden rounded-none border border-line">
+          <div className="h-56 overflow-hidden rounded-2xl border border-line">
             <MiniMap venue={venue} />
           </div>
           <a

@@ -2,21 +2,16 @@ import Link from "next/link";
 import { getIsAdmin, getUser } from "@/lib/supabase/helpers";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 
-/** Wordmark: the three Bauhaus primitives ● ▲ ■ (see docs/DESIGN.md §4). */
 function Wordmark() {
   return (
     <Link href="/" className="flex items-center gap-2">
-      <span aria-hidden className="flex items-center gap-1">
-        <span className="h-3.5 w-3.5 rounded-full bg-red" />
-        <span
-          className="h-0 w-0 border-x-[7px] border-b-[13px] border-x-transparent"
-          style={{ borderBottomColor: "var(--yellow)" }}
-        />
-        <span className="h-3.5 w-3.5 bg-blue" />
+      <span
+        aria-hidden
+        className="grid h-7 w-7 place-items-center rounded-lg bg-ink text-[11px] font-extrabold tracking-tight text-surface"
+      >
+        26
       </span>
-      <span className="display text-sm tracking-wider text-ink">
-        WC26 Screenings
-      </span>
+      <span className="display text-[15px] text-ink">Screenings</span>
     </Link>
   );
 }
@@ -26,36 +21,36 @@ export async function SiteHeader() {
   const isAdmin = user ? await getIsAdmin() : false;
 
   return (
-    <header className="sticky top-0 z-[1100] border-b-2 border-ink bg-paper">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3">
+    <header className="sticky top-0 z-[1100] border-b border-line bg-surface/90 backdrop-blur-sm">
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
         <Wordmark />
 
-        <nav className="flex items-center gap-4 text-sm font-medium text-ink-soft">
-          <Link href="/" className="transition hover:text-blue">
+        <nav className="flex items-center gap-5 text-sm font-medium text-ink-soft">
+          <Link href="/" className="py-1 transition hover:text-ink">
             Venues
           </Link>
-          <Link href="/matches" className="transition hover:text-blue">
+          <Link href="/matches" className="py-1 transition hover:text-ink">
             Matches
           </Link>
           {isAdmin && (
-            <Link href="/admin" className="text-blue transition hover:text-ink">
+            <Link href="/admin" className="py-1 text-blue transition hover:text-blue-deep">
               Admin
             </Link>
           )}
         </nav>
 
-        <div className="ml-auto flex items-center gap-3 whitespace-nowrap text-sm">
+        <div className="ml-auto flex items-center gap-4 whitespace-nowrap text-sm">
           <Link
             href="/submit"
-            className="press border-2 border-ink bg-red px-3.5 py-1.5 font-semibold text-paper"
+            className="press rounded-full bg-ink px-4 py-2 font-semibold text-surface"
           >
-            + Add a venue
+            Add a venue
           </Link>
           {user ? (
             <>
               <Link
                 href="/me"
-                className="hidden font-medium text-ink-soft transition hover:text-blue sm:block"
+                className="hidden font-medium text-ink-soft transition hover:text-ink sm:block"
               >
                 My venues
               </Link>
@@ -64,7 +59,7 @@ export async function SiteHeader() {
           ) : (
             <Link
               href="/login"
-              className="font-medium text-ink-soft transition hover:text-blue"
+              className="font-medium text-ink-soft transition hover:text-ink"
             >
               Sign in
             </Link>

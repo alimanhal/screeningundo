@@ -21,7 +21,7 @@ export function FavoriteTeamForm({
       <select
         name="favorite_team"
         defaultValue={current ?? ""}
-        className="rounded-none border border-ink bg-paper px-3 py-2 text-sm text-ink outline-none focus:border-blue"
+        className="rounded-xl border border-line bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-blue focus:ring-2 focus:ring-blue/15"
       >
         <option value="">No favorite team</option>
         {teams.map((t) => (
@@ -33,7 +33,7 @@ export function FavoriteTeamForm({
       <button
         type="submit"
         disabled={isPending}
-        className="press border-2 border-ink bg-blue px-4 py-2 text-sm font-semibold text-paper disabled:opacity-60"
+        className="press rounded-full bg-ink px-4 py-2 text-sm font-semibold text-surface disabled:opacity-60"
       >
         {isPending ? "Saving…" : "Save"}
       </button>

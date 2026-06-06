@@ -13,8 +13,8 @@ import {
 import type { LatLng, VenueListItem } from "@/lib/venues";
 import { VENUE_TYPE_LABELS } from "@/lib/venues";
 
-// Shape-coded pins (docs/DESIGN.md §4): venue = red circle,
-// favorite-team highlight = yellow circle with ink ring.
+// Accent dot pins with white ring (docs/DESIGN.md §4);
+// favorite-team highlight = amber.
 const pinIcon = (highlighted: boolean) =>
   L.divIcon({
     className: "",
@@ -22,19 +22,21 @@ const pinIcon = (highlighted: boolean) =>
     iconAnchor: [9, 9],
     html: `<span style="
       display:block;width:18px;height:18px;border-radius:9999px;
-      background:${highlighted ? "var(--yellow)" : "var(--red)"};
-      border:2px solid var(--ink);
+      background:${highlighted ? "var(--yellow)" : "var(--blue)"};
+      border:2.5px solid var(--surface);
+      box-shadow:0 1px 4px rgb(0 0 0 / 0.3);
     "></span>`,
   });
 
-// User location = blue square (docs/DESIGN.md §4).
+// User location = ink dot with white ring.
 const userIcon = L.divIcon({
   className: "",
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   html: `<span style="
-    display:block;width:14px;height:14px;
-    background:var(--blue);border:2px solid var(--ink);
+    display:block;width:14px;height:14px;border-radius:9999px;
+    background:var(--ink);border:2.5px solid var(--surface);
+    box-shadow:0 1px 4px rgb(0 0 0 / 0.3);
   "></span>`,
 });
 

@@ -51,28 +51,20 @@ export function LoginForm() {
   }
 
   return (
-    <div className="border-2 border-ink bg-surface p-6 sm:p-8">
-      <span aria-hidden className="mb-4 flex items-center gap-1">
-        <span className="h-3 w-3 rounded-full bg-red" />
-        <span
-          className="h-0 w-0 border-x-[6px] border-b-[11px] border-x-transparent"
-          style={{ borderBottomColor: "var(--yellow)" }}
-        />
-        <span className="h-3 w-3 bg-blue" />
-      </span>
+    <div className="rounded-2xl border border-line bg-surface p-6 shadow-[var(--shadow-card)] sm:p-8">
       <h1 className="display text-2xl text-ink">Sign in</h1>
       <p className="mt-1 text-sm text-ink-soft">
         Sign in to add screening locations. Browsing is open to everyone.
       </p>
 
       {callbackError && (
-        <p className="mt-4 border-2 border-ink bg-red-wash px-3 py-2 text-sm text-red">
+        <p className="mt-4 rounded-xl bg-red-wash px-3 py-2 text-sm text-red">
           Sign-in failed or the link expired. Please try again.
         </p>
       )}
 
       {status === "sent" ? (
-        <p className="mt-6 border-2 border-ink bg-blue-wash px-3 py-2 text-sm text-blue-deep">
+        <p className="mt-6 rounded-xl bg-blue-wash px-3 py-2 text-sm text-blue-deep">
           Check your inbox — we sent a magic link to <strong>{email}</strong>.
         </p>
       ) : (
@@ -85,13 +77,13 @@ export function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="mt-1 w-full border-2 border-ink bg-paper px-3 py-2 text-base font-normal text-ink outline-none sm:text-sm placeholder:text-ink-faint"
+              className="mt-1 w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-base font-normal text-ink outline-none placeholder:text-ink-faint focus:border-blue focus:ring-2 focus:ring-blue/15 sm:text-sm"
             />
           </label>
           <button
             type="submit"
             disabled={status === "sending"}
-            className="press w-full border-2 border-ink bg-red px-4 py-2 font-semibold text-paper disabled:opacity-60"
+            className="press w-full rounded-full bg-ink px-4 py-2.5 font-semibold text-surface disabled:opacity-60"
           >
             {status === "sending" ? "Sending…" : "Email me a magic link"}
           </button>
@@ -99,21 +91,21 @@ export function LoginForm() {
       )}
 
       <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-wide text-ink-faint">
-        <span className="h-0.5 flex-1 bg-ink" />
+        <span className="h-px flex-1 bg-line" />
         or
-        <span className="h-0.5 flex-1 bg-ink" />
+        <span className="h-px flex-1 bg-line" />
       </div>
 
       <button
         onClick={handleGoogle}
         disabled={status === "oauth"}
-        className="press w-full border-2 border-ink bg-surface px-4 py-2 font-semibold text-ink disabled:opacity-60"
+        className="press w-full rounded-full border border-line bg-surface px-4 py-2.5 font-semibold text-ink disabled:opacity-60"
       >
         {status === "oauth" ? "Redirecting…" : "Continue with Google"}
       </button>
 
       {status === "error" && errorMessage && (
-        <p className="mt-4 border-2 border-ink bg-red-wash px-3 py-2 text-sm text-red">
+        <p className="mt-4 rounded-xl bg-red-wash px-3 py-2 text-sm text-red">
           {errorMessage}
         </p>
       )}

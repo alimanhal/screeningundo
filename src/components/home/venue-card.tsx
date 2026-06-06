@@ -29,12 +29,7 @@ export function VenueCard({
       }`}
     >
       {highlight && (
-        <p className="mb-1.5 inline-flex items-center gap-1.5 border border-ink bg-yellow px-2 py-0.5 text-xs font-bold text-ink">
-          <span
-            aria-hidden
-            className="inline-block h-0 w-0 border-x-[5px] border-b-[9px] border-x-transparent"
-            style={{ borderBottomColor: "var(--ink)" }}
-          />
+        <p className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-yellow-wash px-2.5 py-0.5 text-xs font-semibold text-yellow-deep">
           {highlight.flagEmoji} {highlight.teamName} plays here ·{" "}
           {highlight.kickoffLabel}
         </p>
@@ -58,20 +53,20 @@ export function VenueCard({
       <p className="mt-0.5 text-sm text-ink-soft">
         {venue.city}, {venue.country}
       </p>
-      <p className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
-        <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+      <p className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-medium">
+        <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
           {VENUE_TYPE_LABELS[venue.venue_type]}
         </span>
-        <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+        <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
           {INDOOR_OUTDOOR_LABELS[venue.indoor_outdoor]}
         </span>
         {venue.is_free_entry && (
-          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
             Free entry
           </span>
         )}
         {venue.big_screen && (
-          <span className="border border-ink bg-surface px-1.5 py-0.5 text-ink">
+          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
             Big screen
           </span>
         )}

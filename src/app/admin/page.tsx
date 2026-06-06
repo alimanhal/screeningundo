@@ -69,22 +69,22 @@ export default async function AdminPage() {
         open reports
       </p>
 
-      <div className="bauhaus-rule my-6" />
+      <div className="rule my-6" />
 
       <section>
-        <h2 className="display text-sm tracking-wide text-blue-deep">
+        <h2 className="text-sm font-semibold text-ink-faint">
           Pending review
         </h2>
         {pendingSorted.length === 0 ? (
-          <p className="mt-3 rounded-none border border-line bg-surface px-4 py-8 text-center text-sm text-ink-faint">
-            Queue is clear. ⚽
+          <p className="mt-3 rounded-2xl border border-line bg-surface px-4 py-8 text-center text-sm text-ink-faint">
+            Queue is clear.
           </p>
         ) : (
           <ul className="mt-3 space-y-4">
             {pendingSorted.map((venue) => (
               <li
                 key={venue.id}
-                className="rounded-none border border-line bg-surface p-4"
+                className="rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)]"
               >
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
@@ -105,13 +105,13 @@ export default async function AdminPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     {reportCount(venue.id) > 0 && (
-                      <span className="rounded-none bg-red-wash px-2 py-0.5 text-xs font-bold text-red">
+                      <span className="rounded-xl bg-red-wash px-2 py-0.5 text-xs font-bold text-red">
                         {reportCount(venue.id)} open{" "}
                         {reportCount(venue.id) === 1 ? "report" : "reports"}
                       </span>
                     )}
                     {venue.hidden_reason && (
-                      <span className="rounded-none bg-yellow-wash px-2 py-0.5 text-xs font-bold text-yellow-deep">
+                      <span className="rounded-xl bg-yellow-wash px-2 py-0.5 text-xs font-bold text-yellow-deep">
                         Re-review: {venue.hidden_reason}
                       </span>
                     )}
@@ -124,7 +124,7 @@ export default async function AdminPage() {
                   <form action={approveVenue.bind(null, venue.id)}>
                     <button
                       type="submit"
-                      className="rounded-none bg-blue px-4 py-2 text-sm font-semibold text-paper transition hover:bg-blue-deep"
+                      className="press rounded-full bg-ink px-4 py-2 text-sm font-semibold text-surface"
                     >
                       Approve
                     </button>
@@ -137,11 +137,11 @@ export default async function AdminPage() {
                       name="note"
                       placeholder="Rejection note (shown to submitter)"
                       maxLength={500}
-                      className="min-w-0 flex-1 rounded-none border border-ink bg-paper px-2.5 py-1.5 text-sm outline-none focus:border-red"
+                      className="min-w-0 flex-1 rounded-xl border border-line bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-red"
                     />
                     <button
                       type="submit"
-                      className="rounded-none border border-red px-4 py-2 text-sm font-semibold text-red transition hover:bg-red hover:text-paper"
+                      className="rounded-full border border-line px-4 py-2 text-sm font-semibold text-red transition hover:bg-red-wash"
                     >
                       Reject
                     </button>
@@ -153,14 +153,14 @@ export default async function AdminPage() {
         )}
       </section>
 
-      <div className="bauhaus-rule my-8" />
+      <div className="rule my-8" />
 
       <section>
-        <h2 className="display text-sm tracking-wide text-red">
+        <h2 className="text-sm font-semibold text-red">
           Open reports
         </h2>
         {reportedVenues.length === 0 ? (
-          <p className="mt-3 rounded-none border border-line bg-surface px-4 py-8 text-center text-sm text-ink-faint">
+          <p className="mt-3 rounded-2xl border border-line bg-surface px-4 py-8 text-center text-sm text-ink-faint">
             No open reports.
           </p>
         ) : (
@@ -170,7 +170,7 @@ export default async function AdminPage() {
               return (
                 <li
                   key={venueId}
-                  className="rounded-none border border-line bg-surface p-4"
+                  className="rounded-2xl border border-line bg-surface p-4 shadow-[var(--shadow-card)]"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="font-bold text-ink">
@@ -184,7 +184,7 @@ export default async function AdminPage() {
                         {venue ? `· ${venue.city} · ${venue.status}` : ""}
                       </span>
                     </p>
-                    <span className="rounded-none bg-red-wash px-2 py-0.5 text-xs font-bold text-red">
+                    <span className="rounded-xl bg-red-wash px-2 py-0.5 text-xs font-bold text-red">
                       {reports.length} open
                     </span>
                   </div>
@@ -202,7 +202,7 @@ export default async function AdminPage() {
                     <form action={resolveVenueReports.bind(null, venueId)}>
                       <button
                         type="submit"
-                        className="rounded-none border border-ink px-3.5 py-2 text-sm font-semibold text-ink-soft transition hover:border-blue hover:text-blue-deep"
+                        className="rounded-xl border border-line px-3.5 py-2 text-sm font-semibold text-ink-soft transition hover:border-blue hover:text-blue-deep"
                       >
                         Resolve all
                       </button>
@@ -216,11 +216,11 @@ export default async function AdminPage() {
                           name="reason"
                           placeholder="Reason for unpublishing"
                           maxLength={500}
-                          className="min-w-0 flex-1 rounded-none border border-ink bg-paper px-2.5 py-1.5 text-sm outline-none focus:border-red"
+                          className="min-w-0 flex-1 rounded-xl border border-line bg-surface px-2.5 py-1.5 text-sm outline-none focus:border-red"
                         />
                         <button
                           type="submit"
-                          className="rounded-none border border-red px-3.5 py-2 text-sm font-semibold text-red transition hover:bg-red hover:text-paper"
+                          className="rounded-xl border border-red px-3.5 py-2 text-sm font-semibold text-red transition hover:bg-red hover:text-surface"
                         >
                           Unpublish
                         </button>

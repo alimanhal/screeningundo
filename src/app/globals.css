@@ -1,26 +1,32 @@
 @import "tailwindcss";
 
 /*
- * Bauhaus theme — WC26 Screenings. See docs/DESIGN.md (source of truth).
- * Form follows function: primary colors as signals, geometry as brand,
- * hard edges, visible grid, one geometric typeface (Jost).
+ * Modern Minimal theme — see docs/DESIGN.md (source of truth).
+ * Typography-led, whitespace-driven, one electric-blue accent,
+ * soft honest elevation. Not sport-themed.
  */
 :root {
-  --paper: oklch(0.955 0.012 90);
-  --surface: oklch(0.99 0.002 90);
-  --ink: oklch(0.22 0.005 270);
-  --ink-soft: oklch(0.42 0.005 270);
-  --ink-faint: oklch(0.55 0.005 270);
-  --red: oklch(0.55 0.2 30);
-  --red-wash: oklch(0.94 0.035 30);
-  --blue: oklch(0.45 0.15 262);
-  --blue-deep: oklch(0.36 0.13 262);
-  --blue-wash: oklch(0.93 0.025 262);
-  --yellow: oklch(0.85 0.16 90);
-  --yellow-deep: oklch(0.62 0.12 85);
-  --yellow-wash: oklch(0.96 0.05 95);
-  --line: oklch(0.85 0.012 90);
-  --font-geo: "Jost Variable", system-ui, sans-serif;
+  --paper: oklch(0.985 0.002 250);
+  --surface: oklch(1 0 0);
+  --ink: oklch(0.21 0.015 260);
+  --ink-soft: oklch(0.45 0.015 260);
+  --ink-faint: oklch(0.6 0.012 260);
+  --blue: oklch(0.55 0.18 262); /* the accent */
+  --blue-deep: oklch(0.45 0.16 262);
+  --blue-wash: oklch(0.95 0.022 262);
+  --yellow: oklch(0.82 0.14 85);
+  --yellow-deep: oklch(0.55 0.11 80);
+  --yellow-wash: oklch(0.97 0.035 90);
+  --green: oklch(0.62 0.14 155);
+  --green-wash: oklch(0.96 0.03 155);
+  --red: oklch(0.58 0.2 27);
+  --red-wash: oklch(0.96 0.02 27);
+  --line: oklch(0.92 0.005 260);
+  --font-app: "Plus Jakarta Sans Variable", system-ui, sans-serif;
+  --shadow-card: 0 1px 2px oklch(0.21 0.015 260 / 0.05),
+    0 4px 12px oklch(0.21 0.015 260 / 0.05);
+  --shadow-raised: 0 2px 4px oklch(0.21 0.015 260 / 0.06),
+    0 8px 24px oklch(0.21 0.015 260 / 0.08);
 }
 
 @theme inline {
@@ -29,82 +35,62 @@
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-ink-faint: var(--ink-faint);
-  --color-red: var(--red);
-  --color-red-wash: var(--red-wash);
   --color-blue: var(--blue);
   --color-blue-deep: var(--blue-deep);
   --color-blue-wash: var(--blue-wash);
   --color-yellow: var(--yellow);
   --color-yellow-deep: var(--yellow-deep);
   --color-yellow-wash: var(--yellow-wash);
+  --color-green: var(--green);
+  --color-green-wash: var(--green-wash);
+  --color-red: var(--red);
+  --color-red-wash: var(--red-wash);
   --color-line: var(--line);
-  --font-sans: var(--font-geo);
+  --font-sans: var(--font-app);
+  --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
 }
 
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-geo);
+  font-family: var(--font-app);
 }
 
-/* Rectangular, visible focus — applies app-wide */
+/* Visible accent focus, app-wide */
 :focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--blue);
   outline-offset: 2px;
-  border-radius: 0;
 }
 
-/* Uppercase geometric display headings */
+/* Display headings: tight, confident, sentence case */
 .display {
   font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
-/* Tabular numerals for kickoff times, counts, distances */
+/* Tabular numerals for times, counts, distances */
 .scoreboard {
   font-variant-numeric: tabular-nums;
   font-weight: 600;
-  letter-spacing: 0.03em;
 }
 
-/* Section rule: 3px ink bar with the three primary shapes at its head */
-.bauhaus-rule {
-  position: relative;
-  height: 3px;
-  background: var(--ink);
-}
-.bauhaus-rule::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: -5px;
-  width: 12px;
-  height: 12px;
-  border-radius: 9999px;
-  background: var(--red);
-  border: 2px solid var(--ink);
-}
-.bauhaus-rule::after {
-  content: "";
-  position: absolute;
-  left: 20px;
-  top: -5px;
-  width: 12px;
-  height: 12px;
-  background: var(--yellow);
-  border: 2px solid var(--ink);
+/* Quiet section divider */
+.rule {
+  height: 1px;
+  background: var(--line);
 }
 
-/* Poster-print hover: lift with a hard offset shadow (no soft shadows) */
+/* Gentle lift on hover for raised actions/cards */
 .press {
   transition:
-    transform 0.12s cubic-bezier(0.2, 0, 0, 1),
-    box-shadow 0.12s cubic-bezier(0.2, 0, 0, 1);
+    transform 0.15s cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 0.15s cubic-bezier(0.2, 0, 0, 1),
+    background-color 0.15s ease;
 }
 .press:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 var(--ink);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-raised);
 }
 
 /* Leaflet container needs an explicit height from its wrapper */
@@ -114,8 +100,7 @@ body {
   background: var(--blue-wash);
   font: inherit;
 }
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  border-radius: 0;
-  border: 2px solid var(--ink);
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: var(--shadow-raised);
 }

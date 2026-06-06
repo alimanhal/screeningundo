@@ -24,15 +24,16 @@ Next.js 16 (App Router, `src/`, `@/*` alias, Tailwind 4) + Supabase
 
 ## Theme
 
-**Bauhaus** — `docs/DESIGN.md` is the source of truth; conform every UI
-change to it. Tokens in `src/app/globals.css` (`--red`, `--blue`,
-`--yellow`, `--ink`, `--paper`, `--surface`, oklch). Shape coding: venue =
-red circle, favorite/pending = yellow triangle, structure/approved = blue
-square. Hard edges only (`rounded-none`), 2px ink borders on interactive
-elements, `.press` hover (hard offset shadow), no gradients/soft shadows.
-Utility classes: `.display`, `.scoreboard`, `.bauhaus-rule`. Font: Jost
-(self-hosted via Fontsource). Mobile-first: ≥44px touch targets, 16px
-inputs below `sm` (iOS zoom).
+**Modern Minimal** — `docs/DESIGN.md` is the source of truth; conform every
+UI change to it. Not sport-themed. Tokens in `src/app/globals.css`
+(`--ink`, `--paper`, `--surface`, `--blue` accent, status colors, oklch;
+shadows `--shadow-card`/`--shadow-raised`). Radii: cards `rounded-2xl`,
+inputs `rounded-xl`, buttons/chips `rounded-full` pills. Primary CTA = ink
+pill; one blue accent for interactive; statuses: pending amber / approved
+green / rejected red (wash + text). Utility classes: `.display`,
+`.scoreboard`, `.rule`, `.press`. Font: Plus Jakarta Sans (self-hosted via
+Fontsource). Mobile-first: ≥44px touch targets, 16px inputs below `sm`
+(iOS zoom).
 
 ## Commands
 

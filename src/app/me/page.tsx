@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 };
 
 const STATUS_STYLES = {
-  pending: "border border-ink bg-yellow text-ink",
-  approved: "border border-ink bg-blue text-paper",
-  rejected: "border border-ink bg-red text-paper",
+  pending: "bg-yellow-wash text-yellow-deep",
+  approved: "bg-green-wash text-green",
+  rejected: "bg-red-wash text-red",
 } as const;
 
 export default async function MePage() {
@@ -48,7 +48,7 @@ export default async function MePage() {
       <h1 className="display text-2xl text-ink">My venues</h1>
 
       <section className="mt-6">
-        <h2 className="display text-sm tracking-wide text-blue-deep">
+        <h2 className="text-sm font-semibold text-ink-faint">
           Favorite team
         </h2>
         <div className="mt-2">
@@ -59,14 +59,14 @@ export default async function MePage() {
         </div>
       </section>
 
-      <div className="bauhaus-rule my-6" />
+      <div className="rule my-6" />
 
       <section>
-        <h2 className="display text-sm tracking-wide text-blue-deep">
+        <h2 className="text-sm font-semibold text-ink-faint">
           My submissions
         </h2>
         {(myVenues ?? []).length === 0 ? (
-          <p className="mt-3 rounded-none border border-line bg-surface px-4 py-8 text-center text-sm text-ink-soft">
+          <p className="mt-3 rounded-2xl border border-line bg-surface px-4 py-8 text-center text-sm text-ink-soft">
             You haven&apos;t added any venues yet.{" "}
             <Link href="/submit" className="text-blue-deep underline">
               Add your first screening spot
@@ -74,7 +74,7 @@ export default async function MePage() {
             .
           </p>
         ) : (
-          <ul className="mt-2 divide-y divide-line rounded-none border border-line bg-surface">
+          <ul className="mt-2 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)]">
             {(myVenues ?? []).map((venue) => (
               <li key={venue.id}>
                 <Link
@@ -90,7 +90,7 @@ export default async function MePage() {
                     </span>
                   </span>
                   <span
-                    className={`rounded-none px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide ${STATUS_STYLES[venue.status]}`}
+                    className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${STATUS_STYLES[venue.status]}`}
                   >
                     {venue.status}
                   </span>
@@ -108,12 +108,12 @@ export default async function MePage() {
 
       {upvoted.length > 0 && (
         <>
-          <div className="bauhaus-rule my-6" />
+          <div className="rule my-6" />
           <section>
-            <h2 className="display text-sm tracking-wide text-blue-deep">
+            <h2 className="text-sm font-semibold text-ink-faint">
               Venues I upvoted
             </h2>
-            <ul className="mt-2 divide-y divide-line rounded-none border border-line bg-surface">
+            <ul className="mt-2 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)]">
               {upvoted.map((v) => (
                 <li key={v.id}>
                   <Link

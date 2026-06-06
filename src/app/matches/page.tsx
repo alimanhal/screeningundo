@@ -48,10 +48,10 @@ export default async function MatchesPage() {
           </>
         )}
       </p>
-      <div className="bauhaus-rule my-6" />
+      <div className="rule my-6" />
 
       {byDate.size === 0 && (
-        <p className="rounded-none border border-line bg-surface px-4 py-8 text-center text-sm text-ink-faint">
+        <p className="rounded-2xl border border-line bg-surface px-4 py-8 text-center text-sm text-ink-faint">
           The match schedule hasn&apos;t been loaded yet — run the seed
           scripts in <code>supabase/seed/</code>.
         </p>
@@ -60,10 +60,10 @@ export default async function MatchesPage() {
       <div className="space-y-8">
         {[...byDate.entries()].map(([day, dayMatches]) => (
           <section key={day}>
-            <h2 className="display text-sm tracking-wide text-blue-deep">
+            <h2 className="text-sm font-semibold text-ink-faint">
               {day}
             </h2>
-            <ul className="mt-2 divide-y divide-line rounded-none border border-line bg-surface">
+            <ul className="mt-2 divide-y divide-line overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)]">
               {dayMatches.map((m) => (
                 <MatchRowItem
                   key={m.id}

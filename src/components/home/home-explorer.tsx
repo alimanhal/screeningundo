@@ -88,7 +88,7 @@ export function HomeExplorer({
 
   return (
     <div className="grid flex-1 grid-rows-[minmax(260px,40svh)_1fr] lg:grid-cols-[minmax(360px,440px)_1fr] lg:grid-rows-1">
-      <section className="order-2 flex min-h-0 flex-col overflow-hidden border-ink lg:order-1 lg:border-r-2">
+      <section className="order-2 flex min-h-0 flex-col overflow-hidden border-line lg:order-1 lg:border-r">
         <FilterBar
           filters={filters}
           onChange={setFilters}
@@ -96,7 +96,7 @@ export function HomeExplorer({
           nearMeState={nearMeState}
         />
         <div className="min-h-0 flex-1 overflow-y-auto" role="list">
-          <p className="px-4 pt-3 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+          <p className="px-4 pt-3 text-xs font-semibold text-ink-faint">
             {visible.length}{" "}
             {visible.length === 1 ? "screening spot" : "screening spots"}
             {origin ? " · nearest first" : ""}
