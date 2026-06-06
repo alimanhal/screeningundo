@@ -412,6 +412,7 @@ using (
 );
 
 drop policy if exists "votes are readable by everyone" on public.votes;
+drop policy if exists "users can read own votes" on public.votes;
 create policy "users can read own votes"
 on public.votes for select
 to authenticated
