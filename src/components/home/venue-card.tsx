@@ -1,0 +1,76 @@
+import Link from "next/link";
+import {
+  formatDistanceKm,
+  INDOOR_OUTDOOR_LABELS,
+  VENUE_TYPE_LABELS,
+  type VenueListItem,
+} from "@/lib/venues";
+
+export type FavoriteHighlight = {
+  teamName: string;
+  flagEmoji: string;
+  kickoffLabel: string;
+};
+
+export function VenueCard({
+  venue,
+  distanceKm,
+  highlight,
+}: {
+  venue: VenueListItem;
+  distanceKm: number | null;
+  highlight: FavoriteHighlight | null;
+}) {
+  return (
+    <Link
+      href={`/venues/${venue.id}`}
+      className={`group block border-b border-line px-4 py-4 transition hover:bg-pitch-wash/50 ${
+        highlight ? "bg-gold-wash/60" : ""
+      }`}
+    >
+      {highlight && (
+        <p className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-gold/20 px-2 py-0.5 text-xs font-bold text-gold-deep">
+          {highlight.flagEmoji} {highlight.teamName} plays here ·{" "}
+          {highlight.kickoffLabel}
+        </p>
+      )}
+      <div className="flex items-baseline justify-between gap-3">
+        <h3 className="font-bold text-ink group-hover:text-pitch-deep">
+          {venue.name}
+        </h3>
+        {distanceKm !== null ? (
+          <span className="scoreboard shrink-0 text-xs text-pitch-deep">
+            {formatDistanceKm(distanceKm)}
+          </span>
+        ) : (
+          venue.vote_count > 0 && (
+            <span className="scoreboard shrink-0 text-xs text-ink-faint">
+              ▲ {venue.vote_count}
+            </span>
+          )
+        )}
+      </div>
+      <p className="mt-0.5 text-sm text-ink-soft">
+        {venue.city}, {venue.country}
+      </p>
+      <p className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-semibold uppercase tracking-wide">
+        <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+          {VENUE_TYPE_LABELS[venue.venue_type]}
+        </span>
+        <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+          {INDOOR_OUTDOOR_LABELS[venue.indoor_outdoor]}
+        </span>
+        {venue.is_free_entry && (
+          <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+            Free entry
+          </span>
+        )}
+        {venue.big_screen && (
+          <span className="rounded bg-pitch-wash px-1.5 py-0.5 text-pitch-deep">
+            Big screen
+          </span>
+        )}
+      </p>
+    </Link>
+  );
+}
