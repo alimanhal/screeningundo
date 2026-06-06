@@ -16,17 +16,20 @@ import {
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const [{ data: venueRows }, profile] = await Promise.all([
-    supabase.from("venues").select("*, votes(count)").eq("status", "approved"),
-    getProfile(),
-  ]);
+  const [{ data: venueRows }, { data: voteCounts }, profile] =
+    await Promise.all([
+      supabase.from("venues").select("*").eq("status", "approved"),
+      supabase.from("venue_vote_counts").select("*"),
+      getProfile(),
+    ]);
 
-  const venues: VenueListItem[] = (venueRows ?? []).map(
-    ({ votes, ...venue }) => ({
-      ...venue,
-      vote_count: votes?.[0]?.count ?? 0,
-    }),
+  const countByVenue = new Map(
+    (voteCounts ?? []).map((row) => [row.venue_id, row.vote_count]),
   );
+  const venues: VenueListItem[] = (venueRows ?? []).map((venue) => ({
+    ...venue,
+    vote_count: countByVenue.get(venue.id) ?? 0,
+  }));
 
   const favorite = profile?.favorite_team
     ? await buildFavoriteContext(supabase, profile.favorite_team)

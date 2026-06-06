@@ -38,25 +38,30 @@ export default async function MatchPage({ params }: Props) {
     .maybeSingle();
   if (!match) notFound();
 
-  const [{ data: teams }, { data: allVenueRows }, { data: explicit }] =
-    await Promise.all([
-      supabase.from("teams").select("*"),
-      supabase
-        .from("venues")
-        .select("*, votes(count)")
-        .eq("status", "approved"),
-      supabase.from("venue_matches").select("venue_id").eq("match_id", matchId),
-    ]);
+  const [
+    { data: teams },
+    { data: allVenueRows },
+    { data: voteCounts },
+    { data: explicit },
+  ] = await Promise.all([
+    supabase.from("teams").select("*"),
+    supabase.from("venues").select("*").eq("status", "approved"),
+    supabase.from("venue_vote_counts").select("*"),
+    supabase.from("venue_matches").select("venue_id").eq("match_id", matchId),
+  ]);
 
   const teamsByCode = new Map<string, TeamRow>(
     (teams ?? []).map((t) => [t.code, t]),
   );
   const explicitIds = new Set((explicit ?? []).map((r) => r.venue_id));
+  const countByVenue = new Map(
+    (voteCounts ?? []).map((row) => [row.venue_id, row.vote_count]),
+  );
 
   const venues: VenueListItem[] = (allVenueRows ?? [])
-    .map(({ votes, ...venue }) => ({
+    .map((venue) => ({
       ...venue,
-      vote_count: votes?.[0]?.count ?? 0,
+      vote_count: countByVenue.get(venue.id) ?? 0,
     }))
     .filter((v) => v.screens_all_matches || explicitIds.has(v.id))
     .sort((a, b) => b.vote_count - a.vote_count);

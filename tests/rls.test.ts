@@ -64,6 +64,16 @@ describe.skipIf(!hasEnv)("RLS (anonymous client)", () => {
     expect(error !== null || data?.length === 0).toBe(true);
   });
 
+  it("cannot enumerate vote rows (voter privacy)", async () => {
+    const { data, error } = await anon().from("votes").select("user_id");
+    expect(error !== null || data?.length === 0).toBe(true);
+  });
+
+  it("can read aggregate vote counts via the view", async () => {
+    const { error } = await anon().from("venue_vote_counts").select("*");
+    expect(error).toBeNull();
+  });
+
   it("can read teams and matches publicly", async () => {
     const { data, error } = await anon().from("teams").select("code").limit(1);
     expect(error).toBeNull();

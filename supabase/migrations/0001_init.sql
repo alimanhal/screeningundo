@@ -171,6 +171,16 @@ security definer
 set search_path = ''
 as $$
 begin
+  -- Non-admins cannot seed moderation metadata on insert.
+  if not public.is_admin() then
+    new.approved_by := null;
+    new.approved_at := null;
+    new.rejected_by := null;
+    new.rejected_at := null;
+    new.rejection_note := null;
+    new.hidden_reason := null;
+  end if;
+
   if not public.is_admin()
      and new.status = 'pending'
      and (
@@ -402,16 +412,24 @@ using (
 );
 
 drop policy if exists "votes are readable by everyone" on public.votes;
-create policy "votes are readable by everyone"
+create policy "users can read own votes"
 on public.votes for select
-to anon, authenticated
-using (true);
+to authenticated
+using (user_id = (select auth.uid()) or public.is_admin());
 
 drop policy if exists "users can insert own votes" on public.votes;
 create policy "users can insert own votes"
 on public.votes for insert
 to authenticated
-with check (user_id = (select auth.uid()));
+with check (
+  user_id = (select auth.uid())
+  and exists (
+    select 1
+    from public.venues
+    where venues.id = votes.venue_id
+      and venues.status = 'approved'
+  )
+);
 
 drop policy if exists "users can delete own votes" on public.votes;
 create policy "users can delete own votes"
@@ -485,3 +503,15 @@ using (
     or (select public.is_admin())
   )
 );
+
+-- -----------------------------------------------------------------------------
+-- Public vote counts. Vote rows themselves are private (own-row RLS above);
+-- this owner-rights view intentionally exposes only per-venue aggregates.
+-- -----------------------------------------------------------------------------
+create or replace view public.venue_vote_counts as
+select venue_id, count(*)::int as vote_count
+from public.votes
+group by venue_id;
+
+revoke all on public.venue_vote_counts from public;
+grant select on public.venue_vote_counts to anon, authenticated, service_role;

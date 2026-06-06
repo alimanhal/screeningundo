@@ -39,15 +39,20 @@ export default async function VenuePage({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: venueRow } = await supabase
-    .from("venues")
-    .select("*, votes(count)")
-    .eq("id", id)
-    .maybeSingle();
+  const [{ data: venueRow }, { data: voteCount }] = await Promise.all([
+    supabase.from("venues").select("*").eq("id", id).maybeSingle(),
+    supabase
+      .from("venue_vote_counts")
+      .select("vote_count")
+      .eq("venue_id", id)
+      .maybeSingle(),
+  ]);
   if (!venueRow) notFound();
 
-  const { votes, ...rest } = venueRow;
-  const venue: VenueListItem = { ...rest, vote_count: votes?.[0]?.count ?? 0 };
+  const venue: VenueListItem = {
+    ...venueRow,
+    vote_count: voteCount?.vote_count ?? 0,
+  };
 
   const user = await getUser();
   const isOwner = user?.id === venue.created_by;

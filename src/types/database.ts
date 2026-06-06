@@ -344,7 +344,15 @@ export type Database = {
         ];
       };
     };
-    Views: Record<string, never>;
+    Views: {
+      venue_vote_counts: {
+        Row: {
+          venue_id: string;
+          vote_count: number;
+        };
+        Relationships: [];
+      };
+    };
     Functions: {
       is_admin: {
         Args: Record<PropertyKey, never>;
