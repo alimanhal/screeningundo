@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
+// Self-hosted variable font — keeps builds free of network fetches.
+import "@fontsource-variable/archivo";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
-
-const archivo = Archivo({
-  variable: "--font-archivo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -26,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${archivo.variable} h-full antialiased`}>
+    <html lang="en" className="h-full antialiased">
       <body className="flex min-h-svh flex-col">
         <SiteHeader />
         {children}

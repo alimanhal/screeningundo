@@ -509,9 +509,11 @@ using (
 -- this owner-rights view intentionally exposes only per-venue aggregates.
 -- -----------------------------------------------------------------------------
 create or replace view public.venue_vote_counts as
-select venue_id, count(*)::int as vote_count
-from public.votes
-group by venue_id;
+select v.venue_id, count(*)::int as vote_count
+from public.votes v
+join public.venues ven on ven.id = v.venue_id
+where ven.status = 'approved'
+group by v.venue_id;
 
 revoke all on public.venue_vote_counts from public;
 grant select on public.venue_vote_counts to anon, authenticated, service_role;

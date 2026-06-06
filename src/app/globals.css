@@ -22,6 +22,7 @@
   --line-strong: oklch(0.84 0.02 155);
   --danger: oklch(0.55 0.19 25);
   --danger-wash: oklch(0.96 0.025 25);
+  --font-archivo: "Archivo Variable", system-ui, sans-serif;
 }
 
 @theme inline {
