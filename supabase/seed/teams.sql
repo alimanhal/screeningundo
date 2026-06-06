@@ -1,0 +1,60 @@
+-- 2026 World Cup teams and groups.
+-- Source: openfootball/worldcup.json 2026 dataset fetched from:
+-- https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json
+-- Team codes are app-level identifiers, mostly ISO/FIFA-style three-letter codes.
+
+insert into public.teams (code, name, group_letter, flag_emoji)
+values
+  ('MEX', 'Mexico', 'A', '🇲🇽'),
+  ('RSA', 'South Africa', 'A', '🇿🇦'),
+  ('KOR', 'South Korea', 'A', '🇰🇷'),
+  ('CZE', 'Czech Republic', 'A', '🇨🇿'),
+  ('CAN', 'Canada', 'B', '🇨🇦'),
+  ('BIH', 'Bosnia & Herzegovina', 'B', '🇧🇦'),
+  ('QAT', 'Qatar', 'B', '🇶🇦'),
+  ('SUI', 'Switzerland', 'B', '🇨🇭'),
+  ('BRA', 'Brazil', 'C', '🇧🇷'),
+  ('MAR', 'Morocco', 'C', '🇲🇦'),
+  ('HAI', 'Haiti', 'C', '🇭🇹'),
+  ('SCO', 'Scotland', 'C', '🏴'),
+  ('USA', 'United States', 'D', '🇺🇸'),
+  ('PAR', 'Paraguay', 'D', '🇵🇾'),
+  ('AUS', 'Australia', 'D', '🇦🇺'),
+  ('TUR', 'Turkey', 'D', '🇹🇷'),
+  ('GER', 'Germany', 'E', '🇩🇪'),
+  ('CUW', 'Curaçao', 'E', '🇨🇼'),
+  ('CIV', 'Ivory Coast', 'E', '🇨🇮'),
+  ('ECU', 'Ecuador', 'E', '🇪🇨'),
+  ('NED', 'Netherlands', 'F', '🇳🇱'),
+  ('JPN', 'Japan', 'F', '🇯🇵'),
+  ('SWE', 'Sweden', 'F', '🇸🇪'),
+  ('TUN', 'Tunisia', 'F', '🇹🇳'),
+  ('BEL', 'Belgium', 'G', '🇧🇪'),
+  ('EGY', 'Egypt', 'G', '🇪🇬'),
+  ('IRN', 'Iran', 'G', '🇮🇷'),
+  ('NZL', 'New Zealand', 'G', '🇳🇿'),
+  ('ESP', 'Spain', 'H', '🇪🇸'),
+  ('CPV', 'Cape Verde', 'H', '🇨🇻'),
+  ('KSA', 'Saudi Arabia', 'H', '🇸🇦'),
+  ('URU', 'Uruguay', 'H', '🇺🇾'),
+  ('FRA', 'France', 'I', '🇫🇷'),
+  ('SEN', 'Senegal', 'I', '🇸🇳'),
+  ('IRQ', 'Iraq', 'I', '🇮🇶'),
+  ('NOR', 'Norway', 'I', '🇳🇴'),
+  ('ARG', 'Argentina', 'J', '🇦🇷'),
+  ('ALG', 'Algeria', 'J', '🇩🇿'),
+  ('AUT', 'Austria', 'J', '🇦🇹'),
+  ('JOR', 'Jordan', 'J', '🇯🇴'),
+  ('POR', 'Portugal', 'K', '🇵🇹'),
+  ('COD', 'DR Congo', 'K', '🇨🇩'),
+  ('UZB', 'Uzbekistan', 'K', '🇺🇿'),
+  ('COL', 'Colombia', 'K', '🇨🇴'),
+  ('ENG', 'England', 'L', '🏴'),
+  ('CRO', 'Croatia', 'L', '🇭🇷'),
+  ('GHA', 'Ghana', 'L', '🇬🇭'),
+  ('PAN', 'Panama', 'L', '🇵🇦')
+on conflict (code) do update
+set
+  name = excluded.name,
+  group_letter = excluded.group_letter,
+  flag_emoji = excluded.flag_emoji;
