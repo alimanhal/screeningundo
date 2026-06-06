@@ -16,6 +16,7 @@ import {
 } from "@/lib/matches";
 import { MiniMap } from "@/components/map/mini-map";
 import { ShareButton } from "@/components/venues/share-button";
+import { VenueActions } from "@/components/venues/venue-actions";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -50,6 +51,17 @@ export default async function VenuePage({ params }: Props) {
 
   const user = await getUser();
   const isOwner = user?.id === venue.created_by;
+
+  let hasVoted = false;
+  if (user) {
+    const { data: myVote } = await supabase
+      .from("votes")
+      .select("venue_id")
+      .eq("venue_id", venue.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    hasVoted = myVote !== null;
+  }
 
   let screenedMatches: MatchRow[] = [];
   const teamsByCode = new Map<
@@ -105,10 +117,13 @@ export default async function VenuePage({ params }: Props) {
             {venue.address} · {venue.city}, {venue.country}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="scoreboard rounded-full bg-pitch-wash px-3 py-1.5 text-sm text-pitch-deep">
-            ▲ {venue.vote_count}
-          </span>
+        <div className="flex items-start gap-2">
+          <VenueActions
+            venueId={venue.id}
+            voteCount={venue.vote_count}
+            hasVoted={hasVoted}
+            isSignedIn={user !== null}
+          />
           <ShareButton title={venue.name} />
         </div>
       </div>
