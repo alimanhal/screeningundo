@@ -123,48 +123,50 @@ export default async function VenuePage({ params }: Props) {
           </p>
         </div>
         <div className="flex items-start gap-2">
-          <VenueActions
-            venueId={venue.id}
-            voteCount={venue.vote_count}
-            hasVoted={hasVoted}
-            isSignedIn={user !== null}
-          />
+          {venue.status === "approved" && (
+            <VenueActions
+              venueId={venue.id}
+              voteCount={venue.vote_count}
+              hasVoted={hasVoted}
+              isSignedIn={user !== null}
+            />
+          )}
           <ShareButton title={venue.name} />
         </div>
       </div>
 
       <p className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-medium">
-        <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+        <span className="chip">
           {VENUE_TYPE_LABELS[venue.venue_type]}
         </span>
-        <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+        <span className="chip">
           {INDOOR_OUTDOOR_LABELS[venue.indoor_outdoor]}
         </span>
         {venue.is_free_entry && (
-          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+          <span className="chip">
             Free entry
           </span>
         )}
         {venue.big_screen && (
-          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+          <span className="chip">
             Big screen
           </span>
         )}
         {venue.food_available && (
-          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+          <span className="chip">
             Food
           </span>
         )}
         {venue.family_friendly && (
-          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+          <span className="chip">
             Family friendly
           </span>
         )}
-        {venue.capacity_estimate && (
-          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+        {venue.capacity_estimate ? (
+          <span className="chip">
             ~{venue.capacity_estimate.toLocaleString()} people
           </span>
-        )}
+        ) : null}
       </p>
 
       <div className="mt-6 grid gap-6 md:grid-cols-[1fr_320px]">
@@ -208,7 +210,6 @@ export default async function VenuePage({ params }: Props) {
                 fill
                 sizes="(min-width: 768px) 320px, 100vw"
                 className="object-cover"
-                unoptimized
               />
             </div>
           )}

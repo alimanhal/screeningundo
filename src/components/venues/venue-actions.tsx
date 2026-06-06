@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { submitReport, toggleVote } from "@/app/venues/[id]/actions";
+import { loginUrl } from "@/lib/auth/redirect";
 
 export function VenueActions({
   venueId,
@@ -21,9 +22,6 @@ export function VenueActions({
     ok: boolean;
     message: string;
   } | null>(null);
-
-  // Optimistic display
-  const displayCount = voteCount;
 
   function handleVote() {
     startTransition(() => toggleVote(venueId));
@@ -53,15 +51,15 @@ export function VenueActions({
             }`}
             title={hasVoted ? "Remove upvote" : "Upvote this venue"}
           >
-            ▲ {displayCount}
+            ▲ {voteCount}
           </button>
         ) : (
           <Link
-            href={`/login?next=${encodeURIComponent(`/venues/${venueId}`)}`}
+            href={loginUrl(`/venues/${venueId}`)}
             className="scoreboard rounded-xl bg-blue-wash px-3.5 py-2 text-sm text-blue-deep transition hover:bg-blue hover:text-surface"
             title="Sign in to upvote"
           >
-            ▲ {displayCount}
+            ▲ {voteCount}
           </Link>
         )}
         <button
@@ -114,7 +112,7 @@ export function VenueActions({
         ) : (
           <p className="mt-2 text-xs text-ink-faint">
             <Link
-              href={`/login?next=${encodeURIComponent(`/venues/${venueId}`)}`}
+              href={loginUrl(`/venues/${venueId}`)}
               className="text-blue-deep underline"
             >
               Sign in

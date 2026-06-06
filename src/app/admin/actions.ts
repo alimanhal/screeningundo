@@ -46,6 +46,9 @@ export async function rejectVenue(venueId: string, formData: FormData) {
       rejected_by: admin.id,
       rejected_at: new Date().toISOString(),
       rejection_note: note || null,
+      approved_by: null,
+      approved_at: null,
+      hidden_reason: null,
     })
     .eq("id", venueId);
   revalidateVenuePages(venueId);

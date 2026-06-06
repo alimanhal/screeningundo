@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { loginUrl } from "@/lib/auth/redirect";
 import type { Database } from "@/types/database";
 
 type ReportReason = Database["public"]["Tables"]["reports"]["Row"]["reason"];
@@ -12,7 +13,7 @@ export async function toggleVote(venueId: string) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent(`/venues/${venueId}`)}`);
+  if (!user) redirect(loginUrl(`/venues/${venueId}`));
 
   const { data: existing } = await supabase
     .from("votes")
@@ -45,7 +46,7 @@ export async function submitReport(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent(`/venues/${venueId}`)}`);
+  if (!user) redirect(loginUrl(`/venues/${venueId}`));
 
   const reason = formData.get("reason") as ReportReason;
   const details = ((formData.get("details") as string) ?? "").trim();

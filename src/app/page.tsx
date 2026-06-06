@@ -7,7 +7,7 @@ import {
   type MatchRow,
   type TeamRow,
 } from "@/lib/matches";
-import type { VenueListItem } from "@/lib/venues";
+import { attachVoteCounts, type VenueListItem } from "@/lib/venues";
 import {
   HomeExplorer,
   type FavoriteContext,
@@ -23,13 +23,7 @@ export default async function HomePage() {
       getProfile(),
     ]);
 
-  const countByVenue = new Map(
-    (voteCounts ?? []).map((row) => [row.venue_id, row.vote_count]),
-  );
-  const venues: VenueListItem[] = (venueRows ?? []).map((venue) => ({
-    ...venue,
-    vote_count: countByVenue.get(venue.id) ?? 0,
-  }));
+  const venues: VenueListItem[] = attachVoteCounts(venueRows, voteCounts);
 
   const favorite = profile?.favorite_team
     ? await buildFavoriteContext(supabase, profile.favorite_team)

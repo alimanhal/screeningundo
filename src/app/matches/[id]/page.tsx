@@ -8,7 +8,7 @@ import {
   STAGE_LABELS,
   type TeamRow,
 } from "@/lib/matches";
-import type { VenueListItem } from "@/lib/venues";
+import { attachVoteCounts, type VenueListItem } from "@/lib/venues";
 import { VenueCard } from "@/components/home/venue-card";
 
 type Props = { params: Promise<{ id: string }> };
@@ -54,15 +54,8 @@ export default async function MatchPage({ params }: Props) {
     (teams ?? []).map((t) => [t.code, t]),
   );
   const explicitIds = new Set((explicit ?? []).map((r) => r.venue_id));
-  const countByVenue = new Map(
-    (voteCounts ?? []).map((row) => [row.venue_id, row.vote_count]),
-  );
 
-  const venues: VenueListItem[] = (allVenueRows ?? [])
-    .map((venue) => ({
-      ...venue,
-      vote_count: countByVenue.get(venue.id) ?? 0,
-    }))
+  const venues: VenueListItem[] = attachVoteCounts(allVenueRows, voteCounts)
     .filter((v) => v.screens_all_matches || explicitIds.has(v.id))
     .sort((a, b) => b.vote_count - a.vote_count);
 

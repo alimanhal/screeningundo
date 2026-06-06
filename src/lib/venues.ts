@@ -97,6 +97,20 @@ export function filterVenues<T extends VenueRow>(
 
 export type LatLng = { lat: number; lng: number };
 
+/** Merge venue rows with their public vote counts (venue_vote_counts view). */
+export function attachVoteCounts<T extends VenueRow>(
+  venues: T[] | null,
+  counts: Array<{ venue_id: string; vote_count: number }> | null,
+): Array<T & { vote_count: number }> {
+  const byVenue = new Map(
+    (counts ?? []).map((c) => [c.venue_id, c.vote_count]),
+  );
+  return (venues ?? []).map((v) => ({
+    ...v,
+    vote_count: byVenue.get(v.id) ?? 0,
+  }));
+}
+
 /**
  * Sort venues for display. With an origin (near-me), nearest first with a
  * boost for favorite-team venues; otherwise favorite-team venues first,

@@ -9,3 +9,8 @@ export function safeNextPath(next: string | null | undefined): string {
   }
   return next;
 }
+
+/** Builds the sign-in URL that returns the user to `next` after auth. */
+export function loginUrl(next: string): string {
+  return `/login?next=${encodeURIComponent(next)}`;
+}

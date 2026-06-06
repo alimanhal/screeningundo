@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 
 /**
  * Server-side proxy for Nominatim search, per the OSMF usage policy:
- * identified User-Agent, globally throttled to at most 1 request/second,
+ * identified User-Agent, throttled to at most ~1 request/second per
+ * server instance (a strict global limiter would need shared state),
  * with a tiny in-memory cache. Pin-drop remains the primary flow, so a
  * 429/failure here degrades gracefully on the client.
  */

@@ -54,19 +54,19 @@ export function VenueCard({
         {venue.city}, {venue.country}
       </p>
       <p className="mt-2 flex flex-wrap gap-1.5 text-[11px] font-medium">
-        <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+        <span className="chip">
           {VENUE_TYPE_LABELS[venue.venue_type]}
         </span>
-        <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+        <span className="chip">
           {INDOOR_OUTDOOR_LABELS[venue.indoor_outdoor]}
         </span>
         {venue.is_free_entry && (
-          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+          <span className="chip">
             Free entry
           </span>
         )}
         {venue.big_screen && (
-          <span className="rounded-full border border-line bg-surface px-2 py-0.5 text-ink-soft">
+          <span className="chip">
             Big screen
           </span>
         )}

@@ -75,6 +75,16 @@ body {
   font-weight: 600;
 }
 
+/* Amenity/type chip: quiet pill */
+.chip {
+  display: inline-block;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 2px 8px;
+  color: var(--ink-soft);
+}
+
 /* Quiet section divider */
 .rule {
   height: 1px;
