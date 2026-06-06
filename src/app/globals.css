@@ -1,26 +1,92 @@
 @import "tailwindcss";
 
+/*
+ * "Matchday signage" theme — WC26 Screenings
+ * Paper-white tinted toward pitch green, deep pitch green as the dominant
+ * brand hue, gold reserved for favorite-team / trophy moments, ink-navy text.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: oklch(0.988 0.004 150);
+  --paper-raised: oklch(1 0.002 150);
+  --ink: oklch(0.27 0.035 250);
+  --ink-soft: oklch(0.45 0.025 250);
+  --ink-faint: oklch(0.58 0.018 250);
+  --pitch: oklch(0.46 0.12 155);
+  --pitch-deep: oklch(0.34 0.085 155);
+  --pitch-bright: oklch(0.62 0.15 152);
+  --pitch-wash: oklch(0.95 0.025 152);
+  --gold: oklch(0.76 0.13 85);
+  --gold-deep: oklch(0.62 0.12 80);
+  --gold-wash: oklch(0.96 0.04 90);
+  --line: oklch(0.91 0.012 155);
+  --line-strong: oklch(0.84 0.02 155);
+  --danger: oklch(0.55 0.19 25);
+  --danger-wash: oklch(0.96 0.025 25);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-pitch: var(--pitch);
+  --color-pitch-deep: var(--pitch-deep);
+  --color-pitch-bright: var(--pitch-bright);
+  --color-pitch-wash: var(--pitch-wash);
+  --color-gold: var(--gold);
+  --color-gold-deep: var(--gold-deep);
+  --color-gold-wash: var(--gold-wash);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+  --font-sans: var(--font-archivo);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+}
+
+/* Signage-style display headings */
+.display {
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* Scoreboard numerals for kickoff times and counts */
+.scoreboard {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Pitch-line divider: halfway line with a center dot */
+.pitch-divider {
+  position: relative;
+  height: 1px;
+  background: var(--line-strong);
+}
+.pitch-divider::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 9999px;
+  background: var(--paper);
+  transform: translate(-50%, -50%);
+}
+
+/* Leaflet container needs an explicit height from its wrapper */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: var(--pitch-wash);
+  font: inherit;
 }
