@@ -97,7 +97,10 @@ export default async function AdminPage() {
                     <p className="text-xs text-ink-faint">
                       {VENUE_TYPE_LABELS[venue.venue_type]} · {venue.address},{" "}
                       {venue.city}, {venue.country} ·{" "}
-                      {new Date(venue.created_at).toLocaleDateString()}
+                      {new Intl.DateTimeFormat("en", {
+                        dateStyle: "medium",
+                        timeZone: "UTC",
+                      }).format(new Date(venue.created_at))}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">

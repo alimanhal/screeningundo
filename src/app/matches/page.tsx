@@ -25,6 +25,7 @@ export default async function MatchesPage() {
       weekday: "long",
       month: "long",
       day: "numeric",
+      timeZone: "UTC",
     }).format(new Date(m.kickoff_utc));
     byDate.set(day, [...(byDate.get(day) ?? []), m]);
   }
@@ -33,7 +34,8 @@ export default async function MatchesPage() {
     <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
       <h1 className="display text-2xl text-ink">Match schedule</h1>
       <p className="mt-1 text-sm text-ink-soft">
-        All 104 matches. Pick one to see where it&apos;s being screened.
+        All 104 matches, times in UTC. Pick one to see where it&apos;s being
+        screened.
         {favorite && teamsByCode.get(favorite) && (
           <>
             {" "}
@@ -99,6 +101,8 @@ function MatchRowItem({
   const time = new Intl.DateTimeFormat("en", {
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
   }).format(new Date(match.kickoff_utc));
 
   return (

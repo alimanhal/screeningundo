@@ -53,12 +53,19 @@ export function matchLabel(
   return `${name(match.home_team)} vs ${name(match.away_team)}`;
 }
 
+/**
+ * Kickoff labels are always rendered in UTC: deterministic across server
+ * and client (no hydration mismatch) and unambiguous for a global audience.
+ */
 export function formatKickoff(iso: string): string {
-  return new Intl.DateTimeFormat("en", {
+  const label = new Intl.DateTimeFormat("en", {
     weekday: "short",
     month: "short",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
   }).format(new Date(iso));
+  return `${label} UTC`;
 }
