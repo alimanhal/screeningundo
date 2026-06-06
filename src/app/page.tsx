@@ -55,14 +55,10 @@ async function buildFavoriteContext(
   supabase: Awaited<ReturnType<typeof createClient>>,
   teamCode: string,
 ): Promise<FavoriteContext | null> {
-  const [{ data: team }, { data: matches }] = await Promise.all([
-    supabase.from("teams").select("*").eq("code", teamCode).maybeSingle(),
-    supabase
-      .from("matches")
-      .select("*")
-      .or(`home_team.eq.${teamCode},away_team.eq.${teamCode}`),
-  ]);
-  if (!team) return null;
+  const { data: matches } = await supabase
+    .from("matches")
+    .select("*")
+    .or(`home_team.eq.${teamCode},away_team.eq.${teamCode}`);
 
   const next = nextMatchForTeam(
     (matches ?? []) as MatchRow[],
@@ -71,12 +67,24 @@ async function buildFavoriteContext(
   );
   if (!next) return null;
 
-  const { data: explicit } = await supabase
-    .from("venue_matches")
-    .select("venue_id")
-    .eq("match_id", next.id);
+  // Fetch both sides of the match so the banner shows readable names.
+  const codes = [
+    ...new Set(
+      [teamCode, next.home_team, next.away_team].filter(
+        (c): c is string => c !== null,
+      ),
+    ),
+  ];
+  const [{ data: teams }, { data: explicit }] = await Promise.all([
+    supabase.from("teams").select("*").in("code", codes),
+    supabase.from("venue_matches").select("venue_id").eq("match_id", next.id),
+  ]);
 
-  const teamsByCode = new Map<string, TeamRow>([[team.code, team]]);
+  const teamsByCode = new Map<string, TeamRow>(
+    (teams ?? []).map((t) => [t.code, t]),
+  );
+  const team = teamsByCode.get(teamCode);
+  if (!team) return null;
   return {
     teamName: team.name,
     flagEmoji: team.flag_emoji,

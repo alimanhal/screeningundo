@@ -100,9 +100,14 @@ create table if not exists public.reports (
   status text not null default 'open',
   created_at timestamptz not null default now(),
   constraint reports_reason_check check (reason in ('outdated', 'wrong_info', 'closed', 'inappropriate', 'other')),
-  constraint reports_status_check check (status in ('open', 'resolved')),
-  constraint reports_venue_user_unique unique (venue_id, user_id)
+  constraint reports_status_check check (status in ('open', 'resolved'))
 );
+
+-- One *open* report per user per venue; users may report again after a
+-- moderator resolves their earlier report.
+create unique index if not exists reports_open_venue_user_unique
+  on public.reports (venue_id, user_id)
+  where status = 'open';
 
 create index if not exists venues_status_country_city_idx on public.venues (status, country, city);
 create index if not exists venues_status_venue_type_idx on public.venues (status, venue_type);
