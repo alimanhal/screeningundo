@@ -11,7 +11,7 @@ function Wordmark() {
       >
         26
       </span>
-      <span className="display text-[15px] text-ink">Screenings</span>
+      <span className="display text-[15px] text-ink">screeningundo..</span>
     </Link>
   );
 }
