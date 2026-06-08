@@ -90,20 +90,6 @@ export function LoginForm() {
         </form>
       )}
 
-      <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-wide text-ink-faint">
-        <span className="h-px flex-1 bg-line" />
-        or
-        <span className="h-px flex-1 bg-line" />
-      </div>
-
-      <button
-        onClick={handleGoogle}
-        disabled={status === "oauth"}
-        className="press w-full rounded-full border border-line bg-surface px-4 py-2.5 font-semibold text-ink disabled:opacity-60"
-      >
-        {status === "oauth" ? "Redirecting…" : "Continue with Google"}
-      </button>
-
       {status === "error" && errorMessage && (
         <p className="mt-4 rounded-xl bg-red-wash px-3 py-2 text-sm text-red">
           {errorMessage}
