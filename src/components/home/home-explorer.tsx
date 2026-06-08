@@ -87,7 +87,7 @@ export function HomeExplorer({
   }
 
   return (
-    <div className="grid flex-1 grid-rows-[minmax(260px,40svh)_1fr] lg:grid-cols-[minmax(360px,440px)_1fr] lg:grid-rows-1">
+    <div className="grid flex-1 grid-rows-[minmax(260px,40svh)_1fr] lg:grid-cols-[1fr_1fr] lg:grid-rows-1">
       <section className="order-2 flex min-h-0 flex-col overflow-hidden border-line lg:order-1 lg:border-r">
         <FilterBar
           filters={filters}

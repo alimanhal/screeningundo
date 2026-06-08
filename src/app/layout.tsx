@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "@fontsource-variable/plus-jakarta-sans";
 import "@fontsource/noto-sans-malayalam/400.css";
 import "@fontsource/noto-sans-malayalam/700.css";
-import "leaflet/dist/leaflet.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -26,7 +26,9 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased">
       <body className="flex min-h-svh flex-col">
         <SiteHeader />
-        {children}
+        <div className="flex flex-1 flex-col pb-0 min-[671px]:pb-12">
+          {children}
+        </div>
         <SiteFooter />
       </body>
     </html>
