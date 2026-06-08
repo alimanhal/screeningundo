@@ -1,27 +1,24 @@
 "use client";
 
-import L from "leaflet";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { useEffect } from "react";
+import {
+  Map,
+  MapMarker,
+  MarkerContent,
+  useMap,
+} from "@/components/ui/map";
 import type { LatLng } from "@/lib/venues";
 
-// Picked spot = accent dot with white ring.
-const pickerIcon = L.divIcon({
-  className: "",
-  iconSize: [22, 22],
-  iconAnchor: [11, 11],
-  html: `<span style="
-    display:block;width:22px;height:22px;border-radius:9999px;
-    background:var(--blue);border:3px solid var(--surface);
-    box-shadow:0 1px 6px rgb(0 0 0 / 0.35);
-  "></span>`,
-});
-
 function ClickHandler({ onPick }: { onPick: (pos: LatLng) => void }) {
-  useMapEvents({
-    click(e) {
-      onPick({ lat: e.latlng.lat, lng: e.latlng.lng });
-    },
-  });
+  const { map, isLoaded } = useMap();
+  useEffect(() => {
+    if (!map || !isLoaded) return;
+    const handler = (e: { lngLat: { lng: number; lat: number } }) => {
+      onPick({ lat: e.lngLat.lat, lng: e.lngLat.lng });
+    };
+    map.on("click", handler);
+    return () => { map.off("click", handler); };
+  }, [map, isLoaded, onPick]);
   return null;
 }
 
@@ -35,31 +32,31 @@ export function LocationPicker({
   center: LatLng;
 }) {
   return (
-    <MapContainer
+    <Map
       key={`${center.lat.toFixed(4)},${center.lng.toFixed(4)}`}
-      center={[value?.lat ?? center.lat, value?.lng ?? center.lng]}
+      center={[center.lng, center.lat]}
       zoom={value ? 15 : 4}
-      scrollWheelZoom
-      className="z-0 h-full w-full"
+      className="z-0"
+      styles={{
+        light: "https://tiles.openfreemap.org/styles/bright",
+        dark: "https://tiles.openfreemap.org/styles/bright",
+      }}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
       <ClickHandler onPick={onChange} />
       {value && (
-        <Marker
-          position={[value.lat, value.lng]}
-          icon={pickerIcon}
+        <MapMarker
+          longitude={value.lng}
+          latitude={value.lat}
           draggable
-          eventHandlers={{
-            dragend: (e) => {
-              const pos = (e.target as L.Marker).getLatLng();
-              onChange({ lat: pos.lat, lng: pos.lng });
-            },
-          }}
-        />
+          onDragEnd={(lngLat) =>
+            onChange({ lat: lngLat.lat, lng: lngLat.lng })
+          }
+        >
+          <MarkerContent>
+            <div className="h-[22px] w-[22px] rounded-full border-[3px] border-white shadow-lg" style={{ background: "var(--blue)" }} />
+          </MarkerContent>
+        </MapMarker>
       )}
-    </MapContainer>
+    </Map>
   );
 }

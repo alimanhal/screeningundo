@@ -2,50 +2,24 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import L from "leaflet";
 import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
+  Map,
+  MapMarker,
+  MarkerContent,
+  MarkerPopup,
+  MapControls,
   useMap,
-} from "react-leaflet";
+} from "@/components/ui/map";
 import type { LatLng, VenueListItem } from "@/lib/venues";
 import { VENUE_TYPE_LABELS } from "@/lib/venues";
 
-// Accent dot pins with white ring (docs/DESIGN.md §4);
-// favorite-team highlight = amber.
-const pinIcon = (highlighted: boolean) =>
-  L.divIcon({
-    className: "",
-    iconSize: [18, 18],
-    iconAnchor: [9, 9],
-    html: `<span style="
-      display:block;width:18px;height:18px;border-radius:9999px;
-      background:${highlighted ? "var(--yellow)" : "var(--blue)"};
-      border:2.5px solid var(--surface);
-      box-shadow:0 1px 4px rgb(0 0 0 / 0.3);
-    "></span>`,
-  });
-
-// User location = ink dot with white ring.
-const userIcon = L.divIcon({
-  className: "",
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
-  html: `<span style="
-    display:block;width:14px;height:14px;border-radius:9999px;
-    background:var(--ink);border:2.5px solid var(--surface);
-    box-shadow:0 1px 4px rgb(0 0 0 / 0.3);
-  "></span>`,
-});
-
-/** Re-centers the map when the focus target changes. */
 function FlyTo({ target, zoom }: { target: LatLng | null; zoom: number }) {
-  const map = useMap();
+  const { map, isLoaded } = useMap();
   useEffect(() => {
-    if (target) map.flyTo([target.lat, target.lng], zoom, { duration: 0.8 });
-  }, [map, target, zoom]);
+    if (target && map && isLoaded) {
+      map.flyTo({ center: [target.lng, target.lat], zoom, duration: 800 });
+    }
+  }, [map, isLoaded, target, zoom]);
   return null;
 }
 
@@ -66,45 +40,59 @@ export function VenueMap({
   focus,
   focusZoom = 12,
   userLocation,
-  center = { lat: 30, lng: -40 }, // mid-Atlantic: shows the Americas + Europe
+  center = { lat: 30, lng: -40 },
   zoom = 3,
   interactivePopups = true,
 }: VenueMapProps) {
   return (
-    <MapContainer
-      center={[center.lat, center.lng]}
+    <Map
+      center={[center.lng, center.lat]}
       zoom={zoom}
-      scrollWheelZoom
-      className="z-0 h-full w-full"
+      className="z-0"
+      styles={{
+        light: "https://tiles.openfreemap.org/styles/bright",
+        dark: "https://tiles.openfreemap.org/styles/bright",
+      }}
     >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
+      <MapControls position="bottom-right" showZoom showCompass={false} showLocate={false} showFullscreen={false} />
       <FlyTo target={focus} zoom={focusZoom} />
       {userLocation && (
-        <Marker
-          position={[userLocation.lat, userLocation.lng]}
-          icon={userIcon}
-        />
+        <MapMarker longitude={userLocation.lng} latitude={userLocation.lat}>
+          <MarkerContent>
+            <div className="h-[14px] w-[14px] rounded-full border-[2.5px] border-white shadow-lg" style={{ background: "var(--ink)" }} />
+          </MarkerContent>
+        </MapMarker>
       )}
       {venues.map((venue) => (
-        <Marker
-          key={venue.id}
-          position={[venue.lat, venue.lng]}
-          icon={pinIcon(highlightedIds.has(venue.id))}
-        >
+        <MapMarker key={venue.id} longitude={venue.lng} latitude={venue.lat}>
+          <MarkerContent>
+            <div
+              className="h-[18px] w-[18px] rounded-full border-[2.5px] border-white shadow-lg"
+              style={{
+                background: highlightedIds.has(venue.id)
+                  ? "var(--yellow)"
+                  : "var(--blue)",
+              }}
+            />
+          </MarkerContent>
           {interactivePopups && (
-            <Popup>
-              <span style={{ fontWeight: 700 }}>{venue.name}</span>
-              <br />
-              {VENUE_TYPE_LABELS[venue.venue_type]} · {venue.city}
-              <br />
-              <Link href={`/venues/${venue.id}`}>Details →</Link>
-            </Popup>
+            <MarkerPopup>
+              <div className="space-y-1 text-sm">
+                <p className="font-semibold">{venue.name}</p>
+                <p className="text-ink-soft">
+                  {VENUE_TYPE_LABELS[venue.venue_type]} · {venue.city}
+                </p>
+                <Link
+                  href={`/venues/${venue.id}`}
+                  className="text-blue-deep underline"
+                >
+                  Details →
+                </Link>
+              </div>
+            </MarkerPopup>
           )}
-        </Marker>
+        </MapMarker>
       ))}
-    </MapContainer>
+    </Map>
   );
 }
