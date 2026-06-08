@@ -31,15 +31,15 @@ export default async function HomePage() {
 
   return (
     <main className="flex flex-1 flex-col">
-      <section className="border-b border-line bg-surface px-4 py-8 sm:py-10">
+      <section className="hero-banner px-4 py-10 sm:py-12">
         <div className="mx-auto w-full max-w-6xl">
-          <h1 className="display max-w-2xl text-3xl leading-tight text-ink sm:text-4xl">
+          <h1 className="display max-w-2xl text-3xl leading-[1.1] text-ink sm:text-[2.75rem]">
             Find a place to watch,{" "}
-            <span className="text-blue">wherever you are</span>
+            <span className="text-accent">wherever you are</span>
           </h1>
-          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-ink-soft">
-            Community-curated screening locations for the 2026 tournament —
-            submitted by fans, reviewed before they go live.
+          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-soft">
+            Community-curated screening locations across USA, Canada &amp;
+            Mexico — submitted by fans, reviewed before they go live.
           </p>
         </div>
       </section>

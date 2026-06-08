@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getUser } from "@/lib/supabase/helpers";
@@ -202,17 +201,6 @@ export default async function VenuePage({ params }: Props) {
         </div>
 
         <div className="space-y-4">
-          {venue.photo_url && (
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-line">
-              <Image
-                src={venue.photo_url}
-                alt={venue.name}
-                fill
-                sizes="(min-width: 768px) 320px, 100vw"
-                className="object-cover"
-              />
-            </div>
-          )}
           <div className="h-56 overflow-hidden rounded-2xl border border-line">
             <MiniMap venue={venue} />
           </div>

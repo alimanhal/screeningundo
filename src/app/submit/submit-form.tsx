@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { compressImage } from "@/lib/images";
 import { VENUE_TYPE_LABELS, type LatLng, type VenueType } from "@/lib/venues";
 import {
   formatKickoff,
@@ -46,7 +45,6 @@ export function SubmitForm({
   const [selectedMatches, setSelectedMatches] = useState<Set<number>>(
     new Set(),
   );
-  const [photo, setPhoto] = useState<File | null>(null);
   const [state, setState] = useState<"idle" | "saving" | "done" | "error">(
     "idle",
   );
@@ -126,18 +124,6 @@ export function SubmitForm({
     }
 
     try {
-      let photoUrl: string | null = null;
-      if (photo) {
-        const blob = await compressImage(photo);
-        const path = `${user.id}/${crypto.randomUUID()}.webp`;
-        const { error: uploadError } = await supabase.storage
-          .from("venue-photos")
-          .upload(path, blob, { contentType: "image/webp" });
-        if (uploadError) throw new Error(uploadError.message);
-        photoUrl = supabase.storage.from("venue-photos").getPublicUrl(path)
-          .data.publicUrl;
-      }
-
       const { data: venue, error: insertError } = await supabase
         .from("venues")
         .insert({
@@ -161,7 +147,6 @@ export function SubmitForm({
           food_available: data.get("food_available") === "on",
           family_friendly: data.get("family_friendly") === "on",
           screens_all_matches: screensAll,
-          photo_url: photoUrl,
           created_by: user.id,
         })
         .select("id")
@@ -355,7 +340,7 @@ export function SubmitForm({
             onClick={() => setScreensAll(true)}
             className={`rounded-xl px-3 py-1.5 font-semibold transition ${
               screensAll
-                ? "bg-ink text-surface"
+                ? "pill-active"
                 : "border border-line bg-surface text-ink-soft"
             }`}
           >
@@ -366,7 +351,7 @@ export function SubmitForm({
             onClick={() => setScreensAll(false)}
             className={`rounded-xl px-3 py-1.5 font-semibold transition ${
               !screensAll
-                ? "bg-ink text-surface"
+                ? "pill-active"
                 : "border border-line bg-surface text-ink-soft"
             }`}
           >
@@ -398,22 +383,6 @@ export function SubmitForm({
         )}
       </div>
 
-      <div className="rule" />
-
-      {/* Photo */}
-      <label className={labelClass}>
-        Photo (optional)
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-          className="mt-1 block w-full text-sm text-ink-soft file:mr-3 file:rounded-xl file:border-0 file:bg-blue-wash file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-blue-deep"
-        />
-        <span className="mt-1 block text-xs font-normal text-ink-faint">
-          Compressed in your browser before upload.
-        </span>
-      </label>
-
       {error && (
         <p className="rounded-xl bg-red-wash px-3 py-2 text-sm text-red">
           {error}
@@ -423,7 +392,7 @@ export function SubmitForm({
       <button
         type="submit"
         disabled={state === "saving"}
-        className="press w-full rounded-full bg-ink px-4 py-3 font-semibold text-surface disabled:opacity-60 sm:w-auto sm:px-8"
+        className="btn-primary press w-full rounded-full px-4 py-3 disabled:opacity-60 sm:w-auto sm:px-8"
       >
         {state === "saving" ? "Submitting…" : "Submit for review"}
       </button>

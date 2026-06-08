@@ -24,8 +24,8 @@ export function VenueCard({
   return (
     <Link
       href={`/venues/${venue.id}`}
-      className={`group block border-b border-line px-4 py-4 transition hover:bg-blue-wash/50 ${
-        highlight ? "bg-yellow-wash/60" : ""
+      className={`group block border-b border-line px-4 py-4 transition hover:bg-blue-wash/60 hover:shadow-[inset_3px_0_0_var(--blue)] ${
+        highlight ? "bg-yellow-wash/70 shadow-[inset_3px_0_0_var(--yellow)]" : ""
       }`}
     >
       {highlight && (

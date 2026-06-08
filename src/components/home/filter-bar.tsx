@@ -45,13 +45,30 @@ export function FilterBar({
           type="button"
           onClick={onNearMe}
           disabled={nearMeState === "locating"}
-          className={`press shrink-0 rounded-full px-3.5 py-2 text-sm font-semibold disabled:opacity-60 ${
+          aria-pressed={nearMeState === "active"}
+          title="Sort venues by distance from your location"
+          className={`near-me-btn press flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold disabled:opacity-60 ${
             nearMeState === "active"
-              ? "bg-ink text-surface"
-              : "border border-line bg-surface text-ink-soft"
+              ? "pill-active"
+              : "border border-blue/25 bg-blue-wash/60 text-blue-deep hover:border-blue/40"
           }`}
         >
-          {nearMeState === "locating" ? "Locating…" : "📍 Near me"}
+          <svg
+            aria-hidden
+            className={`h-4 w-4 shrink-0 ${nearMeState === "locating" ? "animate-pulse" : ""}`}
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+          </svg>
+          <span className="hidden min-[400px]:inline">
+            {nearMeState === "locating" ? "Locating…" : "Near me"}
+          </span>
         </button>
       </div>
 
@@ -99,8 +116,8 @@ export function FilterBar({
             onClick={() => onChange({ ...filters, [key]: !filters[key] })}
             className={`rounded-full px-3 py-1.5 font-semibold transition ${
               filters[key]
-                ? "bg-ink text-surface"
-                : "border border-line bg-surface text-ink-soft hover:border-ink-faint"
+                ? "pill-active"
+                : "border border-line bg-surface text-ink-soft hover:border-blue/40"
             }`}
           >
             {label}

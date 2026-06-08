@@ -124,7 +124,7 @@ export default async function AdminPage() {
                   <form action={approveVenue.bind(null, venue.id)}>
                     <button
                       type="submit"
-                      className="press rounded-full bg-ink px-4 py-2 text-sm font-semibold text-surface"
+                      className="btn-primary press rounded-full px-4 py-2 text-sm"
                     >
                       Approve
                     </button>

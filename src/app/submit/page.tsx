@@ -15,8 +15,13 @@ export default async function SubmitPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8">
-      <h1 className="display text-2xl text-ink">Add a screening venue</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mb-2 text-xs font-bold uppercase tracking-widest text-blue-deep">
+        Contribute
+      </p>
+      <h1 className="display text-2xl text-ink sm:text-3xl">
+        Add a screening venue
+      </h1>
+      <p className="mt-2 text-sm text-ink-soft">
         Know a fan zone, pub or plaza showing the matches? Add it below —
         submissions are reviewed before they appear publicly.
       </p>

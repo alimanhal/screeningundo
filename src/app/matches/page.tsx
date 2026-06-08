@@ -32,8 +32,11 @@ export default async function MatchesPage() {
 
   return (
     <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
-      <h1 className="display text-2xl text-ink">Match schedule</h1>
-      <p className="mt-1 text-sm text-ink-soft">
+      <p className="mb-2 text-xs font-bold uppercase tracking-widest text-blue-deep">
+        104 matches · UTC
+      </p>
+      <h1 className="display text-2xl text-ink sm:text-3xl">Match schedule</h1>
+      <p className="mt-2 text-sm text-ink-soft">
         All 104 matches, times in UTC. Pick one to see where it&apos;s being
         screened.
         {favorite && teamsByCode.get(favorite) && (

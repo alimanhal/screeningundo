@@ -46,7 +46,7 @@ export function VenueActions({
             aria-pressed={hasVoted}
             className={`scoreboard rounded-xl px-3.5 py-2 text-sm transition disabled:opacity-60 ${
               hasVoted
-                ? "bg-blue text-surface"
+                ? "pill-active"
                 : "bg-blue-wash text-blue-deep hover:bg-blue/15"
             }`}
             title={hasVoted ? "Remove upvote" : "Upvote this venue"}
@@ -56,7 +56,7 @@ export function VenueActions({
         ) : (
           <Link
             href={loginUrl(`/venues/${venueId}`)}
-            className="scoreboard rounded-xl bg-blue-wash px-3.5 py-2 text-sm text-blue-deep transition hover:bg-blue hover:text-surface"
+            className="scoreboard rounded-xl bg-blue-wash px-3.5 py-2 text-sm text-blue-deep transition hover:bg-blue/20"
             title="Sign in to upvote"
           >
             ▲ {voteCount}

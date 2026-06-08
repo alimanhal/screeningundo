@@ -33,7 +33,7 @@ export function FavoriteTeamForm({
       <button
         type="submit"
         disabled={isPending}
-        className="press rounded-full bg-ink px-4 py-2 text-sm font-semibold text-surface disabled:opacity-60"
+        className="btn-primary press rounded-full px-4 py-2 text-sm disabled:opacity-60"
       >
         {isPending ? "Saving…" : "Save"}
       </button>

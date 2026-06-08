@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 // Self-hosted variable font — keeps builds free of network fetches.
 import "@fontsource-variable/plus-jakarta-sans";
+import "@fontsource/noto-sans-malayalam/400.css";
+import "@fontsource/noto-sans-malayalam/700.css";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
