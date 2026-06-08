@@ -109,20 +109,8 @@ export function SiteHeaderNav({
   );
 
   return (
-    <header className="header-accent sticky top-0 z-[1100] bg-surface/92 backdrop-blur-md">
+    <header className="header-accent sticky top-0 z-[1100] bg-white">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-4 py-3">
-        {/* Mobile burger — screens up to 670px */}
-        <button
-          type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-ink transition hover:border-blue/40 max-[670px]:flex min-[671px]:hidden"
-          aria-expanded={menuOpen}
-          aria-controls="mobile-nav"
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <BurgerIcon open={menuOpen} />
-        </button>
-
         <Wordmark />
 
         {/* Desktop nav */}
@@ -141,32 +129,55 @@ export function SiteHeaderNav({
           <div className="hidden items-center gap-4 min-[671px]:flex">
             {authLinks}
           </div>
+
+          {/* Mobile burger — screens up to 670px */}
+          <button
+            type="button"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-ink transition hover:border-blue/40 max-[670px]:flex min-[671px]:hidden"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <BurgerIcon open={menuOpen} />
+          </button>
         </div>
       </div>
 
       {/* Mobile drawer */}
       {menuOpen && (
-        <>
+        <nav
+          id="mobile-nav"
+          className="fixed inset-y-0 right-0 z-[1100] flex w-fit min-w-[200px] flex-col gap-1 border-l border-line bg-surface px-5 py-6 shadow-[var(--shadow-raised)] min-[671px]:hidden"
+        >
           <button
             type="button"
             aria-label="Close menu"
-            className="fixed inset-0 z-[1099] bg-ink/30 backdrop-blur-[2px] min-[671px]:hidden"
+            className="mb-4 flex h-8 w-8 items-center justify-center rounded-full text-ink transition hover:bg-ink/10"
             onClick={closeMenu}
-          />
-          <nav
-            id="mobile-nav"
-            className="fixed inset-y-0 left-0 z-[1100] flex w-[min(280px,82vw)] flex-col gap-1 border-r border-line bg-surface px-5 py-6 shadow-[var(--shadow-raised)] min-[671px]:hidden"
           >
-            <p className="mb-4 text-xs font-bold uppercase tracking-widest text-ink-faint">
-              Menu
-            </p>
-            <div className="flex flex-col gap-4 text-base font-semibold text-ink-soft">
-              {navLinks}
-            </div>
-            <div className="rule my-5" />
-            <div className="flex flex-col gap-4 text-base">{authLinks}</div>
-          </nav>
-        </>
+            <svg
+              aria-hidden
+              className="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
+              <path d="M6 6l12 12" />
+              <path d="M18 6L6 18" />
+            </svg>
+          </button>
+          <p className="mb-4 text-xs font-bold uppercase tracking-widest text-ink-faint">
+            Menu
+          </p>
+          <div className="flex flex-col gap-4 text-base font-semibold text-ink-soft">
+            {navLinks}
+          </div>
+          <div className="rule my-5" />
+          <div className="flex flex-col gap-4 text-base">{authLinks}</div>
+        </nav>
       )}
     </header>
   );
