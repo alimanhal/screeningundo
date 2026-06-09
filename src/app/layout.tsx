@@ -26,7 +26,9 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased">
       <body className="flex min-h-svh flex-col">
         <SiteHeader />
-        {children}
+        <div className="flex flex-1 flex-col pb-0 min-[671px]:pb-12">
+          {children}
+        </div>
         <SiteFooter />
       </body>
     </html>

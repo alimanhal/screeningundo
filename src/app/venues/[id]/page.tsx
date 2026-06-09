@@ -118,7 +118,9 @@ export default async function VenuePage({ params }: Props) {
         <div>
           <h1 className="display text-3xl text-ink">{venue.name}</h1>
           <p className="mt-1 text-sm text-ink-soft">
-            {venue.address} · {venue.city}, {venue.country}
+            {[venue.address, venue.city, venue.country]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
         </div>
         <div className="flex items-start gap-2">
@@ -204,14 +206,25 @@ export default async function VenuePage({ params }: Props) {
           <div className="h-56 overflow-hidden rounded-2xl border border-line">
             <MiniMap venue={venue} />
           </div>
-          <a
-            href={`https://www.openstreetmap.org/?mlat=${venue.lat}&mlon=${venue.lng}#map=17/${venue.lat}/${venue.lng}`}
-            target="_blank"
-            rel="noreferrer"
-            className="block text-center text-sm font-semibold text-blue-deep underline"
-          >
-            Open in OpenStreetMap →
-          </a>
+          {venue.gmaps_link ? (
+            <a
+              href={venue.gmaps_link}
+              target="_blank"
+              rel="noreferrer"
+              className="block text-center text-sm font-semibold text-blue-deep underline"
+            >
+              Open in Google Maps →
+            </a>
+          ) : (
+            <a
+              href={`https://www.openstreetmap.org/?mlat=${venue.lat}&mlon=${venue.lng}#map=17/${venue.lat}/${venue.lng}`}
+              target="_blank"
+              rel="noreferrer"
+              className="block text-center text-sm font-semibold text-blue-deep underline"
+            >
+              Open in OpenStreetMap →
+            </a>
+          )}
         </div>
       </div>
     </main>

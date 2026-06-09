@@ -129,9 +129,9 @@ export function SubmitForm({
         .insert({
           name: (data.get("name") as string).trim(),
           description: (data.get("description") as string).trim(),
-          address: (data.get("address") as string).trim(),
-          city: (data.get("city") as string).trim(),
-          country: (data.get("country") as string).trim(),
+          address: (data.get("address") as string).trim() || null,
+          city: (data.get("city") as string).trim() || null,
+          country: (data.get("country") as string).trim() || null,
           lat: position.lat,
           lng: position.lng,
           venue_type: data.get("venue_type") as VenueType,
@@ -147,6 +147,7 @@ export function SubmitForm({
           food_available: data.get("food_available") === "on",
           family_friendly: data.get("family_friendly") === "on",
           screens_all_matches: screensAll,
+          gmaps_link: (data.get("gmaps_link") as string).trim(),
           created_by: user.id,
         })
         .select("id")
@@ -315,18 +316,28 @@ export function SubmitForm({
         </p>
         <div className="mt-3 grid gap-4 sm:grid-cols-3">
           <label className={`${labelClass} sm:col-span-1`}>
-            Address *
-            <input name="address" required maxLength={200} className={inputClass} />
+            Address
+            <input name="address" maxLength={200} className={inputClass} />
           </label>
           <label className={labelClass}>
-            City *
-            <input name="city" required maxLength={80} className={inputClass} />
+            City
+            <input name="city" maxLength={80} className={inputClass} />
           </label>
           <label className={labelClass}>
-            Country *
-            <input name="country" required maxLength={80} className={inputClass} />
+            Country
+            <input name="country" maxLength={80} className={inputClass} />
           </label>
         </div>
+        <label className={`${labelClass} mt-3 block`}>
+          Google Maps link *
+          <input
+            name="gmaps_link"
+            type="url"
+            required
+            placeholder="https://maps.app.goo.gl/…"
+            className={inputClass}
+          />
+        </label>
       </div>
 
       <div className="rule" />

@@ -20,7 +20,7 @@ function revalidateVenuePages(venueId: string) {
 export async function approveVenue(venueId: string) {
   const admin = await requireAdmin();
   const supabase = await createClient();
-  await supabase
+  const { error } = await supabase
     .from("venues")
     .update({
       status: "approved",
@@ -32,6 +32,7 @@ export async function approveVenue(venueId: string) {
       hidden_reason: null,
     })
     .eq("id", venueId);
+  if (error) throw new Error(error.message);
   revalidateVenuePages(venueId);
 }
 
@@ -39,7 +40,7 @@ export async function rejectVenue(venueId: string, formData: FormData) {
   const admin = await requireAdmin();
   const supabase = await createClient();
   const note = ((formData.get("note") as string) ?? "").trim().slice(0, 500);
-  await supabase
+  const { error } = await supabase
     .from("venues")
     .update({
       status: "rejected",
@@ -51,6 +52,7 @@ export async function rejectVenue(venueId: string, formData: FormData) {
       hidden_reason: null,
     })
     .eq("id", venueId);
+  if (error) throw new Error(error.message);
   revalidateVenuePages(venueId);
 }
 
@@ -61,20 +63,22 @@ export async function unpublishVenue(venueId: string, formData: FormData) {
   const reason = ((formData.get("reason") as string) ?? "")
     .trim()
     .slice(0, 500);
-  await supabase
+  const { error } = await supabase
     .from("venues")
     .update({ status: "pending", hidden_reason: reason || "Under re-review" })
     .eq("id", venueId);
+  if (error) throw new Error(error.message);
   revalidateVenuePages(venueId);
 }
 
 export async function resolveVenueReports(venueId: string) {
   await requireAdmin();
   const supabase = await createClient();
-  await supabase
+  const { error } = await supabase
     .from("reports")
     .update({ status: "resolved" })
     .eq("venue_id", venueId)
     .eq("status", "open");
+  if (error) throw new Error(error.message);
   revalidatePath("/admin");
 }

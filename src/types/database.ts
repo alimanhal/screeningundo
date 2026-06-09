@@ -217,9 +217,9 @@ export type Database = {
           id: string;
           name: string;
           description: string;
-          address: string;
-          city: string;
-          country: string;
+          address: string | null;
+          city: string | null;
+          country: string | null;
           lat: number;
           lng: number;
           venue_type: "fan_zone" | "pub_bar" | "restaurant" | "public_square" | "other";
@@ -231,6 +231,7 @@ export type Database = {
           family_friendly: boolean;
           screens_all_matches: boolean;
           photo_url: string | null;
+          gmaps_link: string;
           status: "pending" | "approved" | "rejected";
           approved_by: string | null;
           approved_at: string | null;
@@ -246,9 +247,9 @@ export type Database = {
           id?: string;
           name: string;
           description: string;
-          address: string;
-          city: string;
-          country: string;
+          address?: string | null;
+          city?: string | null;
+          country?: string | null;
           lat: number;
           lng: number;
           venue_type: "fan_zone" | "pub_bar" | "restaurant" | "public_square" | "other";
@@ -260,6 +261,7 @@ export type Database = {
           family_friendly?: boolean;
           screens_all_matches?: boolean;
           photo_url?: string | null;
+          gmaps_link: string;
           status?: "pending" | "approved" | "rejected";
           approved_by?: string | null;
           approved_at?: string | null;
@@ -275,9 +277,9 @@ export type Database = {
           id?: string;
           name?: string;
           description?: string;
-          address?: string;
-          city?: string;
-          country?: string;
+          address?: string | null;
+          city?: string | null;
+          country?: string | null;
           lat?: number;
           lng?: number;
           venue_type?: "fan_zone" | "pub_bar" | "restaurant" | "public_square" | "other";
@@ -289,6 +291,7 @@ export type Database = {
           family_friendly?: boolean;
           screens_all_matches?: boolean;
           photo_url?: string | null;
+          gmaps_link?: string;
           status?: "pending" | "approved" | "rejected";
           approved_by?: string | null;
           approved_at?: string | null;
