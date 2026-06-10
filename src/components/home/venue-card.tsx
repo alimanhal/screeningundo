@@ -6,6 +6,7 @@ import {
   VENUE_TYPE_LABELS,
   type VenueListItem,
 } from "@/lib/venues";
+import { LocationPinIcon } from "@/components/ui/location-pin-icon";
 
 export type FavoriteHighlight = {
   teamName: string;
@@ -42,16 +43,24 @@ export function VenueCard({
             {highlight.kickoffLabel}
           </p>
         )}
-        <div className="flex items-baseline justify-between gap-3">
-          <h3
-            className={`font-bold text-ink group-hover:text-blue-deep ${
-              mapLink ? "pr-10" : ""
-            }`}
-          >
+        {/*
+          Pad the whole header row by the icon column (44px hit area
+          + 8px gap) so the title AND the distance/vote badge always
+          stay clear of the absolutely-positioned map-pin icon.
+          `flex-wrap` lets the badge drop under the title on very
+          narrow screens instead of being squeezed against the icon.
+        */}
+        <div
+          className={`flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 ${
+            mapLink ? "pr-12" : ""
+          }`}
+        >
+          <h3 className="font-bold text-ink group-hover:text-blue-deep">
             {venue.name}
           </h3>
           {distanceKm !== null ? (
-            <span className="scoreboard shrink-0 text-xs text-blue-deep">
+            <span className="scoreboard inline-flex shrink-0 items-center gap-1 text-xs text-blue-deep">
+              <LocationPinIcon className="h-3.5 w-3.5" />
               {formatDistanceKm(distanceKm)}
             </span>
           ) : (
@@ -91,22 +100,7 @@ export function VenueCard({
           // for the nested `.pin-bounce` SVG (see globals.css).
           className="pin-bounce-host press absolute right-2 top-2 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full text-blue-deep transition hover:bg-surface"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            // Filled tint + thicker stroke = a bolder, more tappable pin.
-            fill="currentColor"
-            fillOpacity="0.18"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="pin-bounce h-5 w-5"
-            aria-hidden="true"
-          >
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" fill="var(--surface)" />
-          </svg>
+          <LocationPinIcon className="pin-bounce h-5 w-5" />
         </a>
       )}
     </div>

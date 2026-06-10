@@ -41,7 +41,7 @@ export default async function HomePage() {
             lang="ml"
             className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-soft"
           >
-            കേരളത്തിലെ ഫുട്ബോൾ ആരാധകർക്ക് — സ്ക്രീനിംഗ് സ്ഥലങ്ങൾ ഒറ്റക്കണ്ണിൽ.
+            കേരളത്തിലെ ഫുട്ബോൾ ആരാധകർക്ക്  സ്ക്രീനിംഗ് സ്ഥലങ്ങൾ ഒറ്റക്കണ്ണിൽ.
           </p>
         </div>
       </section>
