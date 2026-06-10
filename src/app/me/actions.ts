@@ -10,8 +10,6 @@ export async function updateFavoriteTeam(formData: FormData) {
   } = await supabase.auth.getUser();
   if (!user) return;
 
-  
-
   const raw = (formData.get("favorite_team") as string) || "";
   const favorite = /^[A-Z]{3}$/.test(raw) ? raw : null;
 
