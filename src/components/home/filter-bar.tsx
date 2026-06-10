@@ -1,5 +1,6 @@
 "use client";
 
+import { FootballLoader } from "@/components/ui/football-loader";
 import {
   VENUE_TYPE_LABELS,
   type VenueFilters,
@@ -53,19 +54,23 @@ export function FilterBar({
               : "border border-blue/25 bg-blue-wash/60 text-blue-deep hover:border-blue/40"
           }`}
         >
-          <svg
-            aria-hidden
-            className={`h-4 w-4 shrink-0 ${nearMeState === "locating" ? "animate-pulse" : ""}`}
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="3" />
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-          </svg>
+          {nearMeState === "locating" ? (
+            <FootballLoader size="sm" variant="spin" />
+          ) : (
+            <svg
+              aria-hidden
+              className="h-4 w-4 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+            </svg>
+          )}
           <span className="hidden min-[400px]:inline">
             {nearMeState === "locating" ? "Locating…" : "Near me"}
           </span>

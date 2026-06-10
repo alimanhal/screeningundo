@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import type { TeamRow } from "@/lib/matches";
 import { updateFavoriteTeam } from "./actions";
+import { FootballLoader } from "@/components/ui/football-loader";
 
 export function FavoriteTeamForm({
   teams,
@@ -33,8 +34,9 @@ export function FavoriteTeamForm({
       <button
         type="submit"
         disabled={isPending}
-        className="btn-primary press rounded-full px-4 py-2 text-sm disabled:opacity-60"
+        className="btn-primary press inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm disabled:opacity-60"
       >
+        {isPending && <FootballLoader size="sm" variant="spin" />}
         {isPending ? "Saving…" : "Save"}
       </button>
       {current && (

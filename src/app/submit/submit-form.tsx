@@ -18,17 +18,15 @@ import {
 } from "@/lib/matches";
 import type { GeocodeResult } from "@/app/api/geocode/route";
 import type { ReverseGeocodeResult } from "@/app/api/geocode/reverse/route";
+import { FootballLoader } from "@/components/ui/football-loader";
+import { MapLoading } from "@/components/ui/map-loading";
 
 const LocationPicker = dynamic(
   () =>
     import("@/components/map/location-picker").then((m) => m.LocationPicker),
   {
     ssr: false,
-    loading: () => (
-      <div className="flex h-full items-center justify-center bg-blue-wash text-sm text-ink-faint">
-        Loading map…
-      </div>
-    ),
+    loading: () => <MapLoading />,
   },
 );
 
@@ -407,9 +405,10 @@ export function SubmitForm({
             type="button"
             onClick={handleLocateMe}
             disabled={locating}
-            className="press shrink-0 rounded-xl border border-line bg-surface px-3 py-2.5 text-sm font-semibold text-ink-soft hover:bg-blue-wash disabled:opacity-60"
+            className="press inline-flex shrink-0 items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2.5 text-sm font-semibold text-ink-soft hover:bg-blue-wash disabled:opacity-60"
             aria-label="Use my current location"
           >
+            {locating && <FootballLoader size="sm" variant="spin" />}
             {locating ? "Locating…" : "Add location"}
           </button>
         </div>
@@ -518,8 +517,9 @@ export function SubmitForm({
       <button
         type="submit"
         disabled={state === "saving"}
-        className="btn-primary press w-full rounded-full px-4 py-3 disabled:opacity-60 sm:w-auto sm:px-8"
+        className="btn-primary press inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 disabled:opacity-60 sm:w-auto sm:px-8"
       >
+        {state === "saving" && <FootballLoader size="sm" variant="spin" />}
         {state === "saving" ? "Adding…" : "Add venue"}
       </button>
     </form>

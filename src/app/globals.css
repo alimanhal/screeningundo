@@ -142,6 +142,78 @@ body {
 }
 
 /*
+ * Football loader — the app's signature loading affordance. Two
+ * variants live here so the same SVG component can serve every
+ * surface:
+ *   `.football-spin`  — just rotates the ball in place. Used in
+ *      inline buttons and small contexts where horizontal travel
+ *      would overflow.
+ *   `.football-roll`  — full rolling motion: rotate + back-and-forth
+ *      horizontal travel + subtle bounce. Paired with
+ *      `.football-shadow` which scales/fades in sync so the ball
+ *      feels grounded. Used in page-level and map-pane loaders.
+ *
+ * Both honor prefers-reduced-motion (animations disabled below).
+ */
+@keyframes football-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes football-roll {
+  0% {
+    transform: translateX(-32px) translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-16px) translateY(-2px) rotate(180deg);
+  }
+  50% {
+    transform: translateX(32px) translateY(0) rotate(360deg);
+  }
+  75% {
+    transform: translateX(16px) translateY(-2px) rotate(540deg);
+  }
+  100% {
+    transform: translateX(-32px) translateY(0) rotate(720deg);
+  }
+}
+@keyframes football-shadow {
+  0%,
+  50%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.35;
+  }
+  25%,
+  75% {
+    transform: scaleX(0.7);
+    opacity: 0.2;
+  }
+}
+.football-spin {
+  animation: football-spin 1.2s linear infinite;
+  transform-origin: 50% 50%;
+}
+.football-roll {
+  animation: football-roll 1.8s ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+.football-shadow {
+  animation: football-shadow 1.8s ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .football-spin,
+  .football-roll,
+  .football-shadow {
+    animation: none;
+  }
+}
+
+/*
  * Map-pin bounce — used on the venue card's "open in maps" affordance.
  * Idle: gentle 2s loop so the icon is discoverable without hovering.
  * Hover/focus: faster, taller hop to confirm the action is interactive.

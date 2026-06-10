@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { submitReport, toggleVote } from "@/app/venues/[id]/actions";
 import { loginUrl } from "@/lib/auth/redirect";
+import { FootballLoader } from "@/components/ui/football-loader";
 
 export function VenueActions({
   venueId,
@@ -104,8 +105,9 @@ export function VenueActions({
             <button
               type="submit"
               disabled={isPending}
-              className="rounded-xl bg-red px-3.5 py-2 text-sm font-semibold text-surface transition hover:opacity-90 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-xl bg-red px-3.5 py-2 text-sm font-semibold text-surface transition hover:opacity-90 disabled:opacity-60"
             >
+              {isPending && <FootballLoader size="sm" variant="spin" />}
               {isPending ? "Sending…" : "Send report"}
             </button>
           </form>

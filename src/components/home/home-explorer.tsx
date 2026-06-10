@@ -11,6 +11,7 @@ import {
   type VenueFilters,
   type VenueListItem,
 } from "@/lib/venues";
+import { MapLoading } from "@/components/ui/map-loading";
 import { FilterBar } from "./filter-bar";
 import { VenueCard, type FavoriteHighlight } from "./venue-card";
 
@@ -18,11 +19,7 @@ const VenueMap = dynamic(
   () => import("@/components/map/venue-map").then((m) => m.VenueMap),
   {
     ssr: false,
-    loading: () => (
-      <div className="flex h-full w-full items-center justify-center bg-blue-wash text-sm text-ink-faint">
-        Loading map…
-      </div>
-    ),
+    loading: () => <MapLoading />,
   },
 );
 

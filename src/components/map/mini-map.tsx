@@ -1,17 +1,14 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { MapLoading } from "@/components/ui/map-loading";
 import type { VenueListItem } from "@/lib/venues";
 
 const VenueMap = dynamic(
   () => import("@/components/map/venue-map").then((m) => m.VenueMap),
   {
     ssr: false,
-    loading: () => (
-      <div className="flex h-full items-center justify-center bg-blue-wash text-sm text-ink-faint">
-        Loading map…
-      </div>
-    ),
+    loading: () => <MapLoading />,
   },
 );
 

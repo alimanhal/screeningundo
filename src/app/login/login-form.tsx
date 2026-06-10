@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { safeNextPath } from "@/lib/auth/redirect";
+import { FootballLoader } from "@/components/ui/football-loader";
 
 export function LoginForm() {
   const searchParams = useSearchParams();
@@ -83,8 +84,11 @@ export function LoginForm() {
           <button
             type="submit"
             disabled={status === "sending"}
-            className="btn-primary press w-full rounded-full px-4 py-2.5 disabled:opacity-60"
+            className="btn-primary press inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-2.5 disabled:opacity-60"
           >
+            {status === "sending" && (
+              <FootballLoader size="sm" variant="spin" />
+            )}
             {status === "sending" ? "Sending…" : "Email me a magic link"}
           </button>
         </form>
