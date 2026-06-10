@@ -5,6 +5,7 @@ import "@fontsource/noto-sans-malayalam/400.css";
 import "@fontsource/noto-sans-malayalam/700.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
@@ -30,6 +31,9 @@ export default function RootLayout({
           {children}
         </div>
         <SiteFooter />
+        {/* Vercel Analytics — auto no-ops in local dev, only sends
+            page-view events when deployed on Vercel. */}
+        <Analytics />
       </body>
     </html>
   );
