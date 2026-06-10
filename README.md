@@ -1,80 +1,53 @@
-# WC26 Screenings ⚽
+# Screening Undo ⚽
 
-Community-curated **public screening locations for the 2026 World Cup**.
-Anyone can browse fan zones, pubs and plazas showing the matches; signed-in
-fans can submit new spots, which are **verified by moderators** before going
-live.
+A community map of public screening locations for the **2026 FIFA
+World Cup**, focused on **Kerala 🇮🇳** but usable anywhere. Anyone can
+browse, anyone can add a venue — no sign-in needed.
 
-Built entirely on free tiers: **Next.js 16 (App Router)** on Vercel Hobby +
-**Supabase Free** (Postgres, RLS, Auth, Storage) + **Leaflet/OpenStreetMap**
-(no map API key needed).
+Built on free tiers: Next.js 16 + Supabase + OpenStreetMap.
 
-## Features
+## Why
 
-- 🗺️ Map + filterable list of approved venues (type, indoor/outdoor, free
-  entry, big screen, food, family-friendly)
-- 📍 "Near me" geolocation sorting
-- 📅 Full 104-match schedule with per-match "where to watch" pages
-- ⭐ Favorite team — venues screening your team's next match get highlighted
-- ➕ Auth-gated submissions with pin-drop location, address search
-  (rate-limited Nominatim proxy), and browser-side photo compression
-- ✅ Admin moderation queue (approve / reject with note / unpublish), report
-  triage with priority sorting
-- ▲ Upvotes and 🚩 reports from signed-in users
+The best part of any World Cup isn't the stadium — it's the packed
+pub, the public square, the tea shop with a projector. These places
+are everywhere but invisible online. Screening Undo puts them on one
+map.
 
-## Setup
+## How to use
 
-### 1. Supabase project
+**Find a venue:** open the home page, tap *Near me* to sort by
+distance, use filters to narrow down, tap any card's 📍 icon for
+Google Maps directions.
 
-1. Create a free project at [supabase.com](https://supabase.com).
-2. Follow **`supabase/README.md`**: run `supabase/migrations/*.sql`, then the
-   seeds (`teams.sql`, `matches.sql`, optionally `demo_venues.sql`), then
-   insert your first admin into `admin_users`.
-3. Enable the **Google** provider under Auth → Providers (optional; magic
-   link works out of the box). Set the Site URL and redirect URLs under
-   Auth → URL Configuration (`http://localhost:3000/**` for dev).
+**Add a venue:** click *Add a venue*, fill the basics, pick the
+location (type, drop a pin, or use *Add location* for GPS), paste a
+Google Maps link, pick which matches it screens, submit. It's live
+immediately.
 
-### 2. App
+**Sign in** (magic link or Google) only if you want to upvote, report
+bad listings, or set a favorite team.
+
+## Run it locally
 
 ```bash
-cp .env.example .env.local   # fill in your project URL + anon key
+git clone https://github.com/<your-username>/wc26-screenings.git
+cd wc26-screenings
 npm install
+cp .env.example .env.local      # add your Supabase URL + anon key
 npm run dev
 ```
 
-### 3. Tests
+Set up Supabase first — see [`supabase/README.md`](supabase/README.md)
+for the migration and seed order.
 
-```bash
-npm test                      # unit tests
-# With env vars set, live RLS policy probes run against your project too.
-```
+## Contributing
 
-### 4. Deploy (Vercel Hobby)
+PRs welcome. Please ⭐ the repo, fork it, and read
+[`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request.
+Be kind — see [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
-Import the repo in Vercel, set `NEXT_PUBLIC_SUPABASE_URL` and
-`NEXT_PUBLIC_SUPABASE_ANON_KEY`, deploy. Add your production URL to the
-Supabase Auth redirect allowlist.
+## License
 
-## Free-tier notes & mitigations
+MIT — see [`LICENSE`](LICENSE).
 
-| Concern | Mitigation |
-| --- | --- |
-| Supabase Free pauses after ~7 days inactivity | Fine during the tournament; restore from dashboard |
-| 1 GB storage / 5 GB egress | Photos are resized + WebP-compressed in the browser before upload (~≤300 KB) |
-| OSM tile policy | Leaflet defaults (attribution, browser caching), no prefetching, conservative zooms |
-| Nominatim 1 req/s policy | Server-side proxy at `/api/geocode` with global 1.1 s throttle + cache; pin-drop is the primary flow |
-| Spam | Sign-in required to submit, honeypot field, max 3 pending submissions per user, report rate caps, admin approval before publish |
-
-Verification model: all writes go through Supabase **RLS**. Venues insert as
-`pending` (enforced by policy + trigger), only admins (deny-all
-`admin_users` table + `is_admin()` security-definer function) can change
-status or moderation fields. Reports never auto-unpublish — they flag venues
-for admin priority.
-
-Fixture data is seeded from [openfootball](https://github.com/openfootball/worldcup);
-verify kickoff times against FIFA if timing is critical.
-
-**Design:** Modern Minimal — typography-led, whitespace-driven, single
-blue accent, soft elevation, Plus Jakarta Sans. See `docs/DESIGN.md`.
-
-*Not affiliated with FIFA. Map data © OpenStreetMap contributors.*
+Not affiliated with FIFA. Map data © OpenStreetMap contributors.
