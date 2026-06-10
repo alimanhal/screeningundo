@@ -13,8 +13,6 @@ export async function updateFavoriteTeam(formData: FormData) {
   const raw = (formData.get("favorite_team") as string) || "";
   const favorite = /^[A-Z]{3}$/.test(raw) ? raw : null;
 
-
-  
   await supabase
     .from("profiles")
     .upsert({ id: user.id, favorite_team: favorite });
