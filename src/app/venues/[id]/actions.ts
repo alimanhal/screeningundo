@@ -79,6 +79,6 @@ export async function submitReport(
   revalidatePath(`/venues/${venueId}`);
   return {
     ok: true,
-    message: "Thanks — moderators will take a look.",
+    message: "Thanks — the report has been recorded.",
   };
 }

@@ -73,8 +73,10 @@ export function filterVenues<T extends VenueRow>(
   const q = filters.q.trim().toLowerCase();
   return venues.filter((v) => {
     if (q) {
-      const haystack =
-        `${v.name} ${v.city} ${v.country} ${v.address}`.toLowerCase();
+      const haystack = [v.name, v.city, v.country, v.address]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
       if (!haystack.includes(q)) return false;
     }
     if (filters.venueType !== "all" && v.venue_type !== filters.venueType) {
@@ -96,6 +98,80 @@ export function filterVenues<T extends VenueRow>(
 }
 
 export type LatLng = { lat: number; lng: number };
+
+/**
+ * Best-effort extraction of `lat,lng` from a Google Maps URL.
+ *
+ * Handles three common shapes returned by Google Maps:
+ *   1. `@37.7749,-122.4194,15z`   (URL path "at" segment, includes zoom)
+ *   2. `!3d37.7749!4d-122.4194`   (encoded place coords used in /place/ links)
+ *   3. `?q=37.7749,-122.4194`     (raw query coord pair, also `?ll=`)
+ *
+ * Returns null when the URL is missing/invalid or no coord pair is found.
+ * Short-link redirects (`maps.app.goo.gl/...`) cannot be expanded client-side
+ * — those will return null and the user can drop a pin instead.
+ */
+export function parseGmapsCoords(url: string): LatLng | null {
+  if (!url) return null;
+
+  const inRange = (lat: number, lng: number) =>
+    Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    lat >= -90 &&
+    lat <= 90 &&
+    lng >= -180 &&
+    lng <= 180;
+
+  // 1. /@lat,lng,zoom
+  const at = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (at) {
+    const lat = Number(at[1]);
+    const lng = Number(at[2]);
+    if (inRange(lat, lng)) return { lat, lng };
+  }
+
+  // 2. !3dLAT!4dLNG (place coordinates)
+  const place = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+  if (place) {
+    const lat = Number(place[1]);
+    const lng = Number(place[2]);
+    if (inRange(lat, lng)) return { lat, lng };
+  }
+
+  // 3. ?q=lat,lng or ?ll=lat,lng
+  const query = url.match(/[?&](?:q|ll|destination)=(-?\d+\.\d+),(-?\d+\.\d+)/);
+  if (query) {
+    const lat = Number(query[1]);
+    const lng = Number(query[2]);
+    if (inRange(lat, lng)) return { lat, lng };
+  }
+
+  return null;
+}
+
+/**
+ * Build an external "open in map" link for a venue, preferring the user-
+ * submitted Google Maps URL and falling back to OpenStreetMap built from
+ * lat/lng. Returns null when the venue has neither (legacy rows pre-dating
+ * the required-gmaps_link form rule).
+ *
+ * Single source of truth so the venue card, detail page, and any future
+ * surface render the same href/label without duplicated branching.
+ */
+export function getVenueMapHref(
+  venue: Pick<VenueRow, "gmaps_link" | "lat" | "lng">,
+): { href: string; label: string } | null {
+  if (venue.gmaps_link && venue.gmaps_link.trim()) {
+    return { href: venue.gmaps_link, label: "Open in Google Maps" };
+  }
+  if (venue.lat != null && venue.lng != null) {
+    return {
+      href: `https://www.openstreetmap.org/?mlat=${venue.lat}&mlon=${venue.lng}#map=17/${venue.lat}/${venue.lng}`,
+      label: "Open in OpenStreetMap",
+    };
+  }
+  return null;
+}
 
 /** Merge venue rows with their public vote counts (venue_vote_counts view). */
 export function attachVoteCounts<T extends VenueRow>(
@@ -123,14 +199,13 @@ export function sortVenues<T extends VenueListItem>(
 ): T[] {
   const sorted = [...venues];
   if (origin) {
-    sorted.sort((a, b) => {
-      const boostA = isHighlighted(a) ? 0.6 : 1;
-      const boostB = isHighlighted(b) ? 0.6 : 1;
-      return (
-        distanceKm(origin.lat, origin.lng, a.lat, a.lng) * boostA -
-        distanceKm(origin.lat, origin.lng, b.lat, b.lng) * boostB
-      );
-    });
+    // Venues without coordinates sink to the bottom of a near-me list.
+    const effectiveDistance = (v: T) => {
+      if (v.lat == null || v.lng == null) return Number.POSITIVE_INFINITY;
+      const boost = isHighlighted(v) ? 0.6 : 1;
+      return distanceKm(origin.lat, origin.lng, v.lat, v.lng) * boost;
+    };
+    sorted.sort((a, b) => effectiveDistance(a) - effectiveDistance(b));
   } else {
     sorted.sort((a, b) => {
       const hl = Number(isHighlighted(b)) - Number(isHighlighted(a));

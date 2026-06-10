@@ -104,52 +104,49 @@ export function VenueMap({
         </MapMarker>
       )}
 
-      {venues.map((venue) => (
-        <MapMarker
-          key={venue.id}
-          longitude={venue.lng}
-          latitude={venue.lat}
-        >
-          <MarkerContent>
-            <div
-              className="h-[18px] w-[18px] rounded-full border-[2.5px] border-white shadow-lg"
-              style={{
-                background: highlightedIds.has(
-                  venue.id
-                )
-                  ? "var(--yellow)"
-                  : "var(--blue)",
-              }}
-            />
-          </MarkerContent>
+      {venues
+        .filter(
+          (v): v is VenueListItem & { lat: number; lng: number } =>
+            v.lat != null && v.lng != null,
+        )
+        .map((venue) => (
+          <MapMarker
+            key={venue.id}
+            longitude={venue.lng}
+            latitude={venue.lat}
+          >
+            <MarkerContent>
+              <div
+                className="h-[18px] w-[18px] rounded-full border-[2.5px] border-white shadow-lg"
+                style={{
+                  background: highlightedIds.has(venue.id)
+                    ? "var(--yellow)"
+                    : "var(--blue)",
+                }}
+              />
+            </MarkerContent>
 
-          {interactivePopups && (
-            <MarkerPopup>
-              <div className="space-y-1 text-sm">
-                <p className="font-semibold">
-                  {venue.name}
-                </p>
+            {interactivePopups && (
+              <MarkerPopup>
+                <div className="space-y-1 text-sm">
+                  <p className="font-semibold">{venue.name}</p>
 
-                <p className="text-ink-soft">
-                  {
-                    VENUE_TYPE_LABELS[
-                      venue.venue_type
-                    ]
-                  }{" "}
-                  · {venue.city}
-                </p>
+                  <p className="text-ink-soft">
+                    {VENUE_TYPE_LABELS[venue.venue_type]}
+                    {venue.city ? ` · ${venue.city}` : ""}
+                  </p>
 
-                <Link
-                  href={`/venues/${venue.id}`}
-                  className="text-blue-deep underline"
-                >
-                  Details →
-                </Link>
-              </div>
-            </MarkerPopup>
-          )}
-        </MapMarker>
-      ))}
+                  <Link
+                    href={`/venues/${venue.id}`}
+                    className="text-blue-deep underline"
+                  >
+                    Details →
+                  </Link>
+                </div>
+              </MarkerPopup>
+            )}
+          </MapMarker>
+        ))}
     </Map>
   );
 }

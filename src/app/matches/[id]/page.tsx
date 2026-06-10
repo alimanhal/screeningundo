@@ -45,7 +45,7 @@ export default async function MatchPage({ params }: Props) {
     { data: explicit },
   ] = await Promise.all([
     supabase.from("teams").select("*"),
-    supabase.from("venues").select("*").eq("status", "approved"),
+    supabase.from("venues").select("*"),
     supabase.from("venue_vote_counts").select("*"),
     supabase.from("venue_matches").select("venue_id").eq("match_id", matchId),
   ]);

@@ -22,15 +22,3 @@ export const getProfile = cache(async () => {
     .maybeSingle();
   return data;
 });
-
-/**
- * Whether the current user is an admin. Uses the is_admin() Postgres
- * function (admin_users itself is deny-all under RLS).
- */
-export const getIsAdmin = cache(async () => {
-  const user = await getUser();
-  if (!user) return false;
-  const supabase = await createClient();
-  const { data } = await supabase.rpc("is_admin");
-  return data === true;
-});

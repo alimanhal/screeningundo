@@ -9,26 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      admin_users: {
-        Row: {
-          user_id: string;
-        };
-        Insert: {
-          user_id: string;
-        };
-        Update: {
-          user_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "admin_users_user_id_fkey";
-            columns: ["user_id"];
-            isOneToOne: true;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       matches: {
         Row: {
           id: number;
@@ -220,8 +200,8 @@ export type Database = {
           address: string | null;
           city: string | null;
           country: string | null;
-          lat: number;
-          lng: number;
+          lat: number | null;
+          lng: number | null;
           venue_type: "fan_zone" | "pub_bar" | "restaurant" | "public_square" | "other";
           capacity_estimate: number | null;
           is_free_entry: boolean;
@@ -232,14 +212,6 @@ export type Database = {
           screens_all_matches: boolean;
           photo_url: string | null;
           gmaps_link: string;
-          status: "pending" | "approved" | "rejected";
-          approved_by: string | null;
-          approved_at: string | null;
-          rejected_by: string | null;
-          rejected_at: string | null;
-          rejection_note: string | null;
-          hidden_reason: string | null;
-          created_by: string;
           created_at: string;
           updated_at: string;
         };
@@ -250,8 +222,8 @@ export type Database = {
           address?: string | null;
           city?: string | null;
           country?: string | null;
-          lat: number;
-          lng: number;
+          lat?: number | null;
+          lng?: number | null;
           venue_type: "fan_zone" | "pub_bar" | "restaurant" | "public_square" | "other";
           capacity_estimate?: number | null;
           is_free_entry?: boolean;
@@ -262,14 +234,6 @@ export type Database = {
           screens_all_matches?: boolean;
           photo_url?: string | null;
           gmaps_link: string;
-          status?: "pending" | "approved" | "rejected";
-          approved_by?: string | null;
-          approved_at?: string | null;
-          rejected_by?: string | null;
-          rejected_at?: string | null;
-          rejection_note?: string | null;
-          hidden_reason?: string | null;
-          created_by: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -280,8 +244,8 @@ export type Database = {
           address?: string | null;
           city?: string | null;
           country?: string | null;
-          lat?: number;
-          lng?: number;
+          lat?: number | null;
+          lng?: number | null;
           venue_type?: "fan_zone" | "pub_bar" | "restaurant" | "public_square" | "other";
           capacity_estimate?: number | null;
           is_free_entry?: boolean;
@@ -292,26 +256,10 @@ export type Database = {
           screens_all_matches?: boolean;
           photo_url?: string | null;
           gmaps_link?: string;
-          status?: "pending" | "approved" | "rejected";
-          approved_by?: string | null;
-          approved_at?: string | null;
-          rejected_by?: string | null;
-          rejected_at?: string | null;
-          rejection_note?: string | null;
-          hidden_reason?: string | null;
-          created_by?: string;
           created_at?: string;
           updated_at?: string;
         };
-        Relationships: [
-          {
-            foreignKeyName: "venues_created_by_fkey";
-            columns: ["created_by"];
-            isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          },
-        ];
+        Relationships: [];
       };
       votes: {
         Row: {
@@ -356,12 +304,7 @@ export type Database = {
         Relationships: [];
       };
     };
-    Functions: {
-      is_admin: {
-        Args: Record<PropertyKey, never>;
-        Returns: boolean;
-      };
-    };
+    Functions: Record<string, never>;
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

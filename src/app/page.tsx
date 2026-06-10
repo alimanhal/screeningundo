@@ -18,7 +18,7 @@ export default async function HomePage() {
 
   const [{ data: venueRows }, { data: voteCounts }, profile] =
     await Promise.all([
-      supabase.from("venues").select("*").eq("status", "approved"),
+      supabase.from("venues").select("*"),
       supabase.from("venue_vote_counts").select("*"),
       getProfile(),
     ]);
@@ -37,9 +37,11 @@ export default async function HomePage() {
             Find a place to watch,{" "}
             <span className="text-accent">wherever you are</span>
           </h1>
-          <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-soft">
-            Community-curated screening locations across USA, Canada &amp;
-            Mexico — submitted by fans, reviewed before they go live.
+          <p
+            lang="ml"
+            className="mt-4 max-w-xl text-[15px] leading-relaxed text-ink-soft"
+          >
+            കേരളത്തിലെ ഫുട്ബോൾ ആരാധകർക്ക് — സ്ക്രീനിംഗ് സ്ഥലങ്ങൾ ഒറ്റക്കണ്ണിൽ.
           </p>
         </div>
       </section>

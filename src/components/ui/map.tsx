@@ -817,8 +817,9 @@ function MapControls({
           onLocate?.(coords);
           setWaitingForLocation(false);
         },
-        (error) => {
-          console.error("Error getting location:", error);
+        () => {
+          // User denied, browser unavailable, timed out, or insecure origin.
+          // Keep silent — the locate control simply does nothing.
           setWaitingForLocation(false);
         },
       );

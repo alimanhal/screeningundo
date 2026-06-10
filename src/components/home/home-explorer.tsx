@@ -118,7 +118,7 @@ export function HomeExplorer({
                 key={venue.id}
                 venue={venue}
                 distanceKm={
-                  origin
+                  origin && venue.lat != null && venue.lng != null
                     ? distanceKm(origin.lat, origin.lng, venue.lat, venue.lng)
                     : null
                 }

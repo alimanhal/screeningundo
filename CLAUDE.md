@@ -5,22 +5,27 @@ Next.js 16 (App Router, `src/`, `@/*` alias, Tailwind 4) + Supabase
 
 ## Architecture
 
-- **Verification model lives in the database.** All client writes use the
-  user-session anon-key client; RLS + triggers in
-  `supabase/migrations/0001_init.sql` enforce pending-by-default venues,
-  admin-only moderation columns, and anti-spam caps. Never introduce
-  service-role keys into request paths.
-- Admin check = `is_admin()` Postgres function (deny-all `admin_users`
-  table). Server-side helper: `getIsAdmin()` in `src/lib/supabase/helpers.ts`.
+- **Open submissions, no admin/approval.** Anyone (anonymous or signed-in)
+  can add a venue and it goes live immediately. RLS in
+  `supabase/migrations/0003_open_submissions.sql` allows anon insert/select on
+  `venues` and `venue_matches`; `0004_optional_location.sql` makes
+  `lat/lng/address/city/country` nullable. All client writes still use the
+  user-session anon-key client — never introduce service-role keys into
+  request paths.
+- Votes and reports still require login (own-row RLS on `votes` and
+  `reports`). Reports have no in-app moderation UI — resolve via SQL editor.
 - Session refresh in `src/proxy.ts` (Next 16 proxy convention) via
-  `src/lib/supabase/middleware.ts`. Protected prefixes: `/submit`, `/me`,
-  `/admin`.
+  `src/lib/supabase/middleware.ts`. Only protected prefix: `/me`.
 - Pure, testable logic lives in `src/lib/venues.ts` and `src/lib/matches.ts`
-  (filtering, distance, sorting, highlight rules) — UI components stay thin.
+  (filtering, distance, sorting, highlight rules, `parseGmapsCoords`) — UI
+  components stay thin.
 - Maps: `react-leaflet` always loaded with `next/dynamic` + `ssr: false`;
-  Leaflet CSS imported once in `src/app/layout.tsx`.
+  Leaflet CSS imported once in `src/app/layout.tsx`. Components that consume
+  venue rows must treat `lat/lng/address/city/country` as nullable and skip /
+  hide gracefully (no `NaN`, no MapLibre crashes).
 - Geocoding only via `/api/geocode` (Nominatim proxy, 1.1 s global throttle).
-  Pin-drop is the primary location flow — search is best-effort.
+  Pin-drop is the primary location flow — search is best-effort; coords are
+  also extracted from a pasted Google Maps URL via `parseGmapsCoords`.
 
 ## Theme
 

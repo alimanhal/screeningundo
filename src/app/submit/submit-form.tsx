@@ -1,10 +1,15 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { VENUE_TYPE_LABELS, type LatLng, type VenueType } from "@/lib/venues";
+import {
+  parseGmapsCoords,
+  VENUE_TYPE_LABELS,
+  type LatLng,
+  type VenueType,
+} from "@/lib/venues";
 import {
   formatKickoff,
   matchLabel,
@@ -12,6 +17,7 @@ import {
   type TeamRow,
 } from "@/lib/matches";
 import type { GeocodeResult } from "@/app/api/geocode/route";
+import type { ReverseGeocodeResult } from "@/app/api/geocode/reverse/route";
 
 const LocationPicker = dynamic(
   () =>
@@ -40,7 +46,15 @@ export function SubmitForm({
   const teamsByCode = new Map(teams.map((t) => [t.code, t]));
 
   const [position, setPosition] = useState<LatLng | null>(null);
-  const [mapCenter, setMapCenter] = useState<LatLng>({ lat: 30, lng: -40 });
+  // `flyTarget` is consumed imperatively by LocationPicker — every new
+  // object reference triggers a fresh flyTo. Keep it distinct from
+  // `position` so dragging the pin doesn't re-pan the camera.
+  const [flyTarget, setFlyTarget] = useState<LatLng | null>(null);
+  // The single required location field. Users either type a place,
+  // drop/drag a pin (auto-filled via reverse geocode), or hit
+  // "Add location" (GPS → reverse geocode).
+  const [locationText, setLocationText] = useState("");
+  const [locating, setLocating] = useState(false);
   const [screensAll, setScreensAll] = useState(true);
   const [selectedMatches, setSelectedMatches] = useState<Set<number>>(
     new Set(),
@@ -53,8 +67,13 @@ export function SubmitForm({
   // Nominatim search (debounced ≥1.1s per OSMF policy; pin-drop is primary)
   const [searchResults, setSearchResults] = useState<GeocodeResult[]>([]);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Tracks the most recent reverse-geocode request so out-of-order
+  // responses (e.g. user moves pin twice fast) can't overwrite the
+  // text box with a stale address.
+  const reverseSeq = useRef(0);
 
   function handleSearchInput(q: string) {
+    setLocationText(q);
     if (searchTimer.current) clearTimeout(searchTimer.current);
     if (q.trim().length < 3) {
       setSearchResults([]);
@@ -75,11 +94,75 @@ export function SubmitForm({
     }, 1100);
   }
 
+  /**
+   * Reverse-geocode the given coords and fill the location text box.
+   * Failure is non-fatal: we fall back to a "lat, lng" string so the
+   * required field is still satisfied and the form remains submittable.
+   */
+  const reverseGeocodeInto = useCallback(async (pos: LatLng) => {
+    const seq = ++reverseSeq.current;
+    const fallback = `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}`;
+    try {
+      const res = await fetch(
+        `/api/geocode/reverse?lat=${pos.lat}&lng=${pos.lng}`,
+      );
+      if (seq !== reverseSeq.current) return; // a newer pin won
+      if (res.ok) {
+        const { result } = (await res.json()) as {
+          result: ReverseGeocodeResult | null;
+        };
+        setLocationText(result?.display_name ?? fallback);
+      } else {
+        setLocationText(fallback);
+      }
+    } catch {
+      if (seq === reverseSeq.current) setLocationText(fallback);
+    }
+  }, []);
+
+  function handlePinChange(pos: LatLng) {
+    setPosition(pos);
+    setSearchResults([]);
+    void reverseGeocodeInto(pos);
+  }
+
   function pickSearchResult(r: GeocodeResult) {
     const pos = { lat: r.lat, lng: r.lng };
     setPosition(pos);
-    setMapCenter(pos);
+    setFlyTarget({ ...pos }); // fresh ref → triggers map flyTo
+    setLocationText(r.display_name);
     setSearchResults([]);
+    // Bump the reverse-geocode sequence so any in-flight reverse call
+    // from a previous pin can't clobber the address we just wrote.
+    reverseSeq.current++;
+  }
+
+  function handleLocateMe() {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setError("Geolocation isn't available in this browser.");
+      return;
+    }
+    setError(null);
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (geo) => {
+        const pos = { lat: geo.coords.latitude, lng: geo.coords.longitude };
+        setPosition(pos);
+        setFlyTarget({ ...pos });
+        setSearchResults([]);
+        setLocating(false);
+        void reverseGeocodeInto(pos);
+      },
+      (err) => {
+        setLocating(false);
+        setError(
+          err.code === err.PERMISSION_DENIED
+            ? "Location permission denied. Drop a pin or type an address instead."
+            : "Couldn't get your location. Drop a pin or type an address instead.",
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10_000, maximumAge: 60_000 },
+    );
   }
 
   function toggleMatch(id: number) {
@@ -103,25 +186,36 @@ export function SubmitForm({
       setState("done");
       return;
     }
-    if (!position) {
-      setError("Drop a pin on the map to mark the exact location.");
-      return;
-    }
     if (!screensAll && selectedMatches.size === 0) {
       setError("Select at least one match, or switch back to all matches.");
       return;
     }
 
-    setState("saving");
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      setError("Your session expired — please sign in again.");
-      setState("error");
+    // Coordinate fallback chain: dropped pin → parsed Google Maps URL → null.
+    const gmapsLink = (data.get("gmaps_link") as string).trim();
+    const fromGmaps = gmapsLink ? parseGmapsCoords(gmapsLink) : null;
+    const coords = position ?? fromGmaps;
+
+    // Google Maps link is required so every venue card always has a
+    // "Open in Maps" target — no OSM fallback for new submissions.
+    if (!gmapsLink) {
+      setError(
+        "Paste a Google Maps link — it's how visitors will open directions to your venue.",
+      );
       return;
     }
+
+    // Location is required: at least typed text, a pin, or a parsed
+    // gmaps coordinate. Address/city/country remain optional.
+    if (!locationText.trim() && !coords) {
+      setError(
+        "Add a location — type a place, drop a pin on the map, or use Add location.",
+      );
+      return;
+    }
+
+    setState("saving");
+    const supabase = createClient();
 
     try {
       const { data: venue, error: insertError } = await supabase
@@ -132,8 +226,8 @@ export function SubmitForm({
           address: (data.get("address") as string).trim() || null,
           city: (data.get("city") as string).trim() || null,
           country: (data.get("country") as string).trim() || null,
-          lat: position.lat,
-          lng: position.lng,
+          lat: coords?.lat ?? null,
+          lng: coords?.lng ?? null,
           venue_type: data.get("venue_type") as VenueType,
           capacity_estimate: data.get("capacity_estimate")
             ? Number(data.get("capacity_estimate"))
@@ -148,7 +242,6 @@ export function SubmitForm({
           family_friendly: data.get("family_friendly") === "on",
           screens_all_matches: screensAll,
           gmaps_link: (data.get("gmaps_link") as string).trim(),
-          created_by: user.id,
         })
         .select("id")
         .single();
@@ -176,15 +269,16 @@ export function SubmitForm({
   if (state === "done") {
     return (
       <div className="rounded-xl border border-line bg-blue-wash/60 p-8 text-center">
-        <p className="display text-xl text-blue-deep">Submitted</p>
+        <p className="display text-xl text-blue-deep">Added</p>
         <p className="mx-auto mt-2 max-w-md text-sm text-ink-soft">
-          Thanks! Your venue is now <strong>pending review</strong>. It will
-          appear publicly once a moderator approves it — track its status in{" "}
-          <Link href="/me" className="text-blue-deep underline">
-            My venues
-          </Link>
-          .
+          Thanks! Your venue is now live and visible to everyone.
         </p>
+        <Link
+          href="/"
+          className="mt-4 inline-block text-sm font-semibold text-blue-deep underline"
+        >
+          Back to venues
+        </Link>
       </div>
     );
   }
@@ -273,40 +367,57 @@ export function SubmitForm({
 
       {/* Location */}
       <div>
-        <p className={labelClass}>Location *</p>
+        <label htmlFor="location-text" className={labelClass}>
+          Location *
+        </label>
         <p className="mt-0.5 text-xs text-ink-faint">
-          Click the map (or drag the pin) to mark the exact spot. The address
-          search can help you get close.
+          Type a place, click the map (or drag the pin), or hit{" "}
+          <span className="font-semibold">Add location</span> to use your
+          current spot. Address, city and country below are optional.
         </p>
-        <div className="relative mt-2">
-          <input
-            type="search"
-            onChange={(e) => handleSearchInput(e.target.value)}
-            placeholder="Search address or place (optional)…"
-            aria-label="Search address"
-            className={inputClass}
-          />
-          {searchResults.length > 0 && (
-            <ul className="absolute z-[1200] mt-1 w-full overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)] shadow-lg">
-              {searchResults.map((r) => (
-                <li key={`${r.lat},${r.lng}`}>
-                  <button
-                    type="button"
-                    onClick={() => pickSearchResult(r)}
-                    className="w-full px-3 py-2 text-left text-sm text-ink-soft hover:bg-blue-wash"
-                  >
-                    {r.display_name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="relative mt-2 flex gap-2">
+          <div className="relative flex-1">
+            <input
+              id="location-text"
+              type="search"
+              required
+              value={locationText}
+              onChange={(e) => handleSearchInput(e.target.value)}
+              placeholder="Search address or place…"
+              aria-label="Location"
+              className={inputClass}
+            />
+            {searchResults.length > 0 && (
+              <ul className="absolute z-[1200] mt-1 w-full overflow-hidden rounded-2xl border border-line bg-surface shadow-[var(--shadow-card)] shadow-lg">
+                {searchResults.map((r) => (
+                  <li key={`${r.lat},${r.lng}`}>
+                    <button
+                      type="button"
+                      onClick={() => pickSearchResult(r)}
+                      className="w-full px-3 py-2 text-left text-sm text-ink-soft hover:bg-blue-wash"
+                    >
+                      {r.display_name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={handleLocateMe}
+            disabled={locating}
+            className="press shrink-0 rounded-xl border border-line bg-surface px-3 py-2.5 text-sm font-semibold text-ink-soft hover:bg-blue-wash disabled:opacity-60"
+            aria-label="Use my current location"
+          >
+            {locating ? "Locating…" : "Add location"}
+          </button>
         </div>
         <div className="mt-2 h-72 overflow-hidden rounded-2xl border border-line">
           <LocationPicker
             value={position}
-            onChange={setPosition}
-            center={mapCenter}
+            onChange={handlePinChange}
+            flyTo={flyTarget}
           />
         </div>
         <p className="mt-1 text-xs text-ink-faint">
@@ -337,6 +448,10 @@ export function SubmitForm({
             placeholder="https://maps.app.goo.gl/…"
             className={inputClass}
           />
+          <span className="mt-1 block text-xs font-normal text-ink-faint">
+            Paste the share link from Google Maps — visitors tap this to
+            open directions.
+          </span>
         </label>
       </div>
 
@@ -405,7 +520,7 @@ export function SubmitForm({
         disabled={state === "saving"}
         className="btn-primary press w-full rounded-full px-4 py-3 disabled:opacity-60 sm:w-auto sm:px-8"
       >
-        {state === "saving" ? "Submitting…" : "Submit for review"}
+        {state === "saving" ? "Adding…" : "Add venue"}
       </button>
     </form>
   );

@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
+import { USER_AGENT, reserveSlot } from "./nominatim";
 
 /**
  * Server-side proxy for Nominatim search, per the OSMF usage policy:
  * identified User-Agent, throttled to at most ~1 request/second per
- * server instance (a strict global limiter would need shared state),
+ * server instance (shared with the reverse route via `reserveSlot`),
  * with a tiny in-memory cache. Pin-drop remains the primary flow, so a
  * 429/failure here degrades gracefully on the client.
  */
-const USER_AGENT = "WC26-Screenings/1.0 (worldcup-screenings community site)";
-const MIN_INTERVAL_MS = 1100;
-
-let lastRequestAt = 0;
 const cache = new Map<string, { at: number; body: GeocodeResult[] }>();
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
@@ -32,14 +29,12 @@ export async function GET(request: Request) {
     return NextResponse.json({ results: cached.body });
   }
 
-  const now = Date.now();
-  if (now - lastRequestAt < MIN_INTERVAL_MS) {
+  if (!reserveSlot()) {
     return NextResponse.json(
       { results: [], throttled: true },
       { status: 429 },
     );
   }
-  lastRequestAt = now;
 
   try {
     const upstream = await fetch(

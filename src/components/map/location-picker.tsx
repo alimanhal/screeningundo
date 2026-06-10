@@ -38,10 +38,12 @@ function ClickHandler({
   return null;
 }
 
-function FlyToUser({
+function FlyTo({
   target,
+  zoom = 9,
 }: {
   target: LatLng | null;
+  zoom?: number;
 }) {
   const { map, isLoaded } = useMap();
 
@@ -50,10 +52,10 @@ function FlyToUser({
 
     map.flyTo({
       center: [target.lng, target.lat],
-      zoom: 9,
+      zoom,
       duration: 1000,
     });
-  }, [map, isLoaded, target]);
+  }, [map, isLoaded, target, zoom]);
 
   return null;
 }
@@ -62,17 +64,27 @@ export function LocationPicker({
   value,
   onChange,
   center: centerProp,
+  flyTo,
 }: {
   value: LatLng | null;
   onChange: (pos: LatLng) => void;
   center?: LatLng;
+  /**
+   * Imperative fly target. Any new reference (use a fresh object) re-runs
+   * the camera animation, so the parent can pan/zoom to a search pick,
+   * GPS result, etc. without taking full controlled-viewport ownership.
+   */
+  flyTo?: LatLng | null;
 }) {
   const [userLocation, setUserLocation] =
     useState<LatLng | null>(null);
 
   useEffect(() => {
-    if (!navigator.geolocation) return;
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
 
+    // Geolocation is best-effort: it may be denied, unavailable, time out, or
+    // be blocked on insecure origins. None of those are bugs — the user can
+    // still drop a pin manually — so we silently swallow the failure.
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setUserLocation({
@@ -80,9 +92,10 @@ export function LocationPicker({
           lng: position.coords.longitude,
         });
       },
-      (error) => {
-        console.error("Geolocation error:", error);
-      }
+      () => {
+        /* ignore: user can drop a pin manually */
+      },
+      { timeout: 8000, maximumAge: 60_000 },
     );
   }, []);
 
@@ -103,7 +116,10 @@ export function LocationPicker({
         dark: "https://tiles.openfreemap.org/styles/bright",
       }}
     >
-      <FlyToUser target={userLocation} />
+      {/* Initial soft pan to the user's GPS on mount (no pin). */}
+      <FlyTo target={userLocation} zoom={9} />
+      {/* Parent-driven fly: search pick, "Add location" button, etc. */}
+      <FlyTo target={flyTo ?? null} zoom={16} />
 
       <ClickHandler onPick={onChange} />
 

@@ -41,10 +41,8 @@ function BurgerIcon({ open }: { open: boolean }) {
 
 export function SiteHeaderNav({
   isLoggedIn,
-  isAdmin,
 }: {
   isLoggedIn: boolean;
-  isAdmin: boolean;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -75,15 +73,6 @@ export function SiteHeaderNav({
       >
         Matches
       </Link>
-      {isAdmin && (
-        <Link
-          href="/admin"
-          onClick={closeMenu}
-          className="py-1 text-blue transition hover:text-blue-deep"
-        >
-          Admin
-        </Link>
-      )}
     </>
   );
 

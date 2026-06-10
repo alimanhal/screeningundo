@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getUser } from "@/lib/supabase/helpers";
 import {
+  getVenueMapHref,
   INDOOR_OUTDOOR_LABELS,
   VENUE_TYPE_LABELS,
   type VenueListItem,
@@ -28,9 +29,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .eq("id", id)
     .maybeSingle();
   if (!venue) return { title: "Venue not found" };
+  const place = [venue.city, venue.country].filter(Boolean).join(", ");
   return {
-    title: `${venue.name} — ${venue.city}`,
-    description: `Watch 2026 World Cup matches at ${venue.name}, ${venue.city}, ${venue.country}.`,
+    title: place ? `${venue.name} — ${place}` : venue.name,
+    description: place
+      ? `Watch 2026 World Cup matches at ${venue.name}, ${place}.`
+      : `Watch 2026 World Cup matches at ${venue.name}.`,
   };
 }
 
@@ -54,7 +58,6 @@ export default async function VenuePage({ params }: Props) {
   };
 
   const user = await getUser();
-  const isOwner = user?.id === venue.created_by;
 
   let hasVoted = false;
   if (user) {
@@ -92,28 +95,6 @@ export default async function VenuePage({ params }: Props) {
 
   return (
     <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
-      {isOwner && venue.status !== "approved" && (
-        <div
-          className={`mb-6 rounded-xl px-4 py-3 text-sm ${
-            venue.status === "pending"
-              ? "bg-yellow-wash text-yellow-deep"
-              : "bg-red-wash text-red"
-          }`}
-        >
-          {venue.status === "pending" ? (
-            <>
-              <strong>Pending review.</strong> Only you (and moderators) can
-              see this page until it&apos;s approved.
-            </>
-          ) : (
-            <>
-              <strong>Rejected.</strong>{" "}
-              {venue.rejection_note ?? "This venue was not approved."}
-            </>
-          )}
-        </div>
-      )}
-
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="display text-3xl text-ink">{venue.name}</h1>
@@ -124,14 +105,12 @@ export default async function VenuePage({ params }: Props) {
           </p>
         </div>
         <div className="flex items-start gap-2">
-          {venue.status === "approved" && (
-            <VenueActions
-              venueId={venue.id}
-              voteCount={venue.vote_count}
-              hasVoted={hasVoted}
-              isSignedIn={user !== null}
-            />
-          )}
+          <VenueActions
+            venueId={venue.id}
+            voteCount={venue.vote_count}
+            hasVoted={hasVoted}
+            isSignedIn={user !== null}
+          />
           <ShareButton title={venue.name} />
         </div>
       </div>
@@ -203,28 +182,24 @@ export default async function VenuePage({ params }: Props) {
         </div>
 
         <div className="space-y-4">
-          <div className="h-56 overflow-hidden rounded-2xl border border-line">
-            <MiniMap venue={venue} />
-          </div>
-          {venue.gmaps_link ? (
-            <a
-              href={venue.gmaps_link}
-              target="_blank"
-              rel="noreferrer"
-              className="block text-center text-sm font-semibold text-blue-deep underline"
-            >
-              Open in Google Maps →
-            </a>
-          ) : (
-            <a
-              href={`https://www.openstreetmap.org/?mlat=${venue.lat}&mlon=${venue.lng}#map=17/${venue.lat}/${venue.lng}`}
-              target="_blank"
-              rel="noreferrer"
-              className="block text-center text-sm font-semibold text-blue-deep underline"
-            >
-              Open in OpenStreetMap →
-            </a>
+          {venue.lat != null && venue.lng != null && (
+            <div className="h-56 overflow-hidden rounded-2xl border border-line">
+              <MiniMap venue={venue} />
+            </div>
           )}
+          {(() => {
+            const mapLink = getVenueMapHref(venue);
+            return mapLink ? (
+              <a
+                href={mapLink.href}
+                target="_blank"
+                rel="noreferrer"
+                className="block text-center text-sm font-semibold text-blue-deep underline"
+              >
+                {mapLink.label} →
+              </a>
+            ) : null;
+          })()}
         </div>
       </div>
     </main>

@@ -15,8 +15,10 @@ const VenueMap = dynamic(
   },
 );
 
-/** Small single-venue map for detail pages. */
+/** Small single-venue map for detail pages. Renders nothing if the venue
+ *  has no coordinates. */
 export function MiniMap({ venue }: { venue: VenueListItem }) {
+  if (venue.lat == null || venue.lng == null) return null;
   return (
     <VenueMap
       venues={[venue]}

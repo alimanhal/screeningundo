@@ -141,6 +141,49 @@ body {
   font-weight: 700;
 }
 
+/*
+ * Map-pin bounce — used on the venue card's "open in maps" affordance.
+ * Idle: gentle 2s loop so the icon is discoverable without hovering.
+ * Hover/focus: faster, taller hop to confirm the action is interactive.
+ * Respects prefers-reduced-motion (disabled below).
+ */
+@keyframes pin-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes pin-bounce-strong {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-6px);
+  }
+  60% {
+    transform: translateY(-2px);
+  }
+}
+.pin-bounce {
+  animation: pin-bounce 2s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+.pin-bounce-host:hover .pin-bounce,
+.pin-bounce-host:focus-visible .pin-bounce {
+  animation: pin-bounce-strong 0.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pin-bounce,
+  .pin-bounce-host:hover .pin-bounce,
+  .pin-bounce-host:focus-visible .pin-bounce {
+    animation: none;
+  }
+}
+
 /* WC26 modular "26" badge — gold gradient tile */
 .wc26-badge {
   background: var(--gold-gradient);

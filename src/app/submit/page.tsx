@@ -22,8 +22,8 @@ export default async function SubmitPage() {
         Add a screening venue
       </h1>
       <p className="mt-2 text-sm text-ink-soft">
-        Know a fan zone, pub or plaza showing the matches? Add it below —
-        submissions are reviewed before they appear publicly.
+        Know a fan zone, pub or plaza showing the matches? Add it below — no
+        sign-in required, it goes live immediately.
       </p>
       <div className="rule my-6" />
       <SubmitForm matches={matches ?? []} teams={teams ?? []} />

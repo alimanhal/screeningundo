@@ -6,8 +6,9 @@ import type { Database } from "@/types/database";
  * Live RLS policy checks — run only when a Supabase project is configured:
  *   NEXT_PUBLIC_SUPABASE_URL=... NEXT_PUBLIC_SUPABASE_ANON_KEY=... npm test
  *
- * These verify the verification model from the anonymous client's
- * perspective: pending venues must be invisible and unwritable.
+ * Verifies the open-submission model: anonymous clients can read and insert
+ * venues without restriction; votes/reports still require an authenticated
+ * session and are own-row only.
  */
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -16,52 +17,42 @@ const hasEnv = Boolean(url && anonKey);
 describe.skipIf(!hasEnv)("RLS (anonymous client)", () => {
   const anon = () => createClient<Database>(url!, anonKey!);
 
-  it("cannot see pending or rejected venues", async () => {
+  it("can read venues without signing in", async () => {
+    const { error } = await anon().from("venues").select("id").limit(1);
+    expect(error).toBeNull();
+  });
+
+  it("can insert a venue while signed out", async () => {
+    const probeName = `RLS probe ${crypto.randomUUID()}`;
     const { data, error } = await anon()
       .from("venues")
-      .select("id, status")
-      .neq("status", "approved");
+      .insert({
+        name: probeName,
+        description: "anon insert probe",
+        address: "x",
+        city: "x",
+        country: "x",
+        lat: 0,
+        lng: 0,
+        venue_type: "other",
+        indoor_outdoor: "indoor",
+        gmaps_link: "https://maps.example.com/probe",
+      })
+      .select("id")
+      .single();
     expect(error).toBeNull();
-    expect(data).toEqual([]);
+    expect(data?.id).toBeTruthy();
+
+    // Cleanup: delete is locked down for anon by default, so leave the row;
+    // tests with a service role can purge them.
   });
 
-  it("cannot insert a venue while signed out", async () => {
-    const { error } = await anon().from("venues").insert({
-      name: "RLS probe",
-      description: "should fail",
-      address: "x",
-      city: "x",
-      country: "x",
-      lat: 0,
-      lng: 0,
-      venue_type: "other",
-      indoor_outdoor: "indoor",
-      created_by: "00000000-0000-0000-0000-000000000000",
+  it("cannot insert a vote while signed out", async () => {
+    const { error } = await anon().from("votes").insert({
+      venue_id: "00000000-0000-0000-0000-000000000000",
+      user_id: "00000000-0000-0000-0000-000000000000",
     });
     expect(error).not.toBeNull();
-  });
-
-  it("cannot insert a venue pre-approved even with a spoofed status", async () => {
-    const { error } = await anon().from("venues").insert({
-      name: "RLS probe approved",
-      description: "should fail",
-      address: "x",
-      city: "x",
-      country: "x",
-      lat: 0,
-      lng: 0,
-      venue_type: "other",
-      indoor_outdoor: "indoor",
-      status: "approved",
-      created_by: "00000000-0000-0000-0000-000000000000",
-    });
-    expect(error).not.toBeNull();
-  });
-
-  it("cannot read admin_users (deny-all)", async () => {
-    const { data, error } = await anon().from("admin_users").select("user_id");
-    // Either an error or an empty result is acceptable deny behavior.
-    expect(error !== null || data?.length === 0).toBe(true);
   });
 
   it("cannot enumerate vote rows (voter privacy)", async () => {

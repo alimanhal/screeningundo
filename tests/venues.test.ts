@@ -4,6 +4,7 @@ import {
   distanceKm,
   filterVenues,
   formatDistanceKm,
+  parseGmapsCoords,
   sortVenues,
   type VenueListItem,
 } from "@/lib/venues";
@@ -27,14 +28,7 @@ function makeVenue(overrides: Partial<VenueListItem> = {}): VenueListItem {
     family_friendly: false,
     screens_all_matches: true,
     photo_url: null,
-    status: "approved",
-    approved_by: null,
-    approved_at: null,
-    rejected_by: null,
-    rejected_at: null,
-    rejection_note: null,
-    hidden_reason: null,
-    created_by: crypto.randomUUID(),
+    gmaps_link: "https://maps.example.com/test",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     vote_count: 0,
@@ -146,5 +140,78 @@ describe("sortVenues", () => {
     const input = [far, near];
     sortVenues(input, { lat: 19.43, lng: -99.13 }, () => false);
     expect(input.map((v) => v.name)).toEqual(["Far", "Near"]);
+  });
+
+  it("sinks null-coord venues to the bottom of a near-me list", () => {
+    const noCoords = makeVenue({ name: "NoCoords", lat: null, lng: null });
+    const out = sortVenues(
+      [noCoords, near, far],
+      { lat: 19.43, lng: -99.13 },
+      () => false,
+    );
+    expect(out.map((v) => v.name)).toEqual(["Near", "Far", "NoCoords"]);
+  });
+});
+
+describe("filterVenues null-safety", () => {
+  it("does not match the literal string 'null' against null fields", () => {
+    const v = makeVenue({
+      name: "Anonymous Spot",
+      city: null,
+      country: null,
+      address: null,
+    });
+    const out = filterVenues([v], { ...DEFAULT_FILTERS, q: "null" });
+    expect(out).toHaveLength(0);
+  });
+
+  it("still matches the name when city/country/address are null", () => {
+    const v = makeVenue({
+      name: "Anonymous Spot",
+      city: null,
+      country: null,
+      address: null,
+    });
+    const out = filterVenues([v], { ...DEFAULT_FILTERS, q: "anonymous" });
+    expect(out).toHaveLength(1);
+  });
+});
+
+describe("parseGmapsCoords", () => {
+  it("parses an /@lat,lng,zoom URL", () => {
+    expect(
+      parseGmapsCoords(
+        "https://www.google.com/maps/@37.7749,-122.4194,15z/data=foo",
+      ),
+    ).toEqual({ lat: 37.7749, lng: -122.4194 });
+  });
+
+  it("parses a place URL with !3dLAT!4dLNG", () => {
+    expect(
+      parseGmapsCoords(
+        "https://www.google.com/maps/place/X/data=!3m1!4b1!4m6!3m5!1s0x80!8m2!3d40.7128!4d-74.006!16s/g/foo",
+      ),
+    ).toEqual({ lat: 40.7128, lng: -74.006 });
+  });
+
+  it("parses a ?q=lat,lng URL", () => {
+    expect(
+      parseGmapsCoords("https://maps.google.com/?q=51.5074,-0.1278"),
+    ).toEqual({ lat: 51.5074, lng: -0.1278 });
+  });
+
+  it("returns null for short-link shapes it cannot expand", () => {
+    expect(parseGmapsCoords("https://maps.app.goo.gl/AbcXyz123")).toBeNull();
+  });
+
+  it("returns null for empty / nonsense input", () => {
+    expect(parseGmapsCoords("")).toBeNull();
+    expect(parseGmapsCoords("not a url")).toBeNull();
+  });
+
+  it("rejects out-of-range coordinates", () => {
+    expect(
+      parseGmapsCoords("https://www.google.com/maps/@95.0,-200.0,12z"),
+    ).toBeNull();
   });
 });
