@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getUser } from "@/lib/supabase/helpers";
@@ -111,6 +112,14 @@ export default async function VenuePage({ params }: Props) {
             hasVoted={hasVoted}
             isSignedIn={user !== null}
           />
+          {user && venue.created_by === user.id && (
+            <Link
+              href={`/venues/${venue.id}/edit`}
+              className="press rounded-xl border border-line px-3.5 py-2 text-sm font-semibold text-ink-soft transition hover:bg-blue-wash"
+            >
+              Edit
+            </Link>
+          )}
           <ShareButton title={venue.name} />
         </div>
       </div>

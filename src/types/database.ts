@@ -211,6 +211,7 @@ export type Database = {
           family_friendly: boolean;
           screens_all_matches: boolean;
           photo_url: string | null;
+          created_by: string | null;
           gmaps_link: string;
           created_at: string;
           updated_at: string;
@@ -233,6 +234,7 @@ export type Database = {
           family_friendly?: boolean;
           screens_all_matches?: boolean;
           photo_url?: string | null;
+          created_by?: string | null;
           gmaps_link: string;
           created_at?: string;
           updated_at?: string;
@@ -255,6 +257,7 @@ export type Database = {
           family_friendly?: boolean;
           screens_all_matches?: boolean;
           photo_url?: string | null;
+          created_by?: string | null;
           gmaps_link?: string;
           created_at?: string;
           updated_at?: string;

@@ -3,11 +3,13 @@
 import { useCallback, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import {
   parseGmapsCoords,
   VENUE_TYPE_LABELS,
   type LatLng,
+  type VenueRow,
   type VenueType,
 } from "@/lib/venues";
 import {
@@ -34,40 +36,44 @@ const inputClass =
   "mt-1 w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-base text-ink outline-none placeholder:text-ink-faint focus:border-blue focus:ring-2 focus:ring-blue/15 sm:text-sm";
 const labelClass = "block text-sm font-semibold text-ink";
 
-export function SubmitForm({
+export function EditForm({
+  venue,
   matches,
   teams,
+  screenedMatchIds,
 }: {
+  venue: VenueRow;
   matches: MatchRow[];
   teams: TeamRow[];
+  screenedMatchIds: number[];
 }) {
+  const router = useRouter();
   const teamsByCode = new Map(teams.map((t) => [t.code, t]));
 
-  const [position, setPosition] = useState<LatLng | null>(null);
-  // `flyTarget` is consumed imperatively by LocationPicker — every new
-  // object reference triggers a fresh flyTo. Keep it distinct from
-  // `position` so dragging the pin doesn't re-pan the camera.
+  const initialCoords: LatLng | null =
+    venue.lat != null && venue.lng != null
+      ? { lat: venue.lat, lng: venue.lng }
+      : null;
+  const initialLocation =
+    [venue.address, venue.city, venue.country]
+      .filter(Boolean)
+      .join(", ") || "";
+
+  const [position, setPosition] = useState<LatLng | null>(initialCoords);
   const [flyTarget, setFlyTarget] = useState<LatLng | null>(null);
-  // The single required location field. Users either type a place,
-  // drop/drag a pin (auto-filled via reverse geocode), or hit
-  // "Add location" (GPS → reverse geocode).
-  const [locationText, setLocationText] = useState("");
+  const [locationText, setLocationText] = useState(initialLocation);
   const [locating, setLocating] = useState(false);
-  const [screensAll, setScreensAll] = useState(true);
+  const [screensAll, setScreensAll] = useState(venue.screens_all_matches);
   const [selectedMatches, setSelectedMatches] = useState<Set<number>>(
-    new Set(),
+    new Set(screenedMatchIds),
   );
   const [state, setState] = useState<"idle" | "saving" | "done" | "error">(
     "idle",
   );
   const [error, setError] = useState<string | null>(null);
 
-  // Nominatim search (debounced ≥1.1s per OSMF policy; pin-drop is primary)
   const [searchResults, setSearchResults] = useState<GeocodeResult[]>([]);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // Tracks the most recent reverse-geocode request so out-of-order
-  // responses (e.g. user moves pin twice fast) can't overwrite the
-  // text box with a stale address.
   const reverseSeq = useRef(0);
 
   function handleSearchInput(q: string) {
@@ -87,16 +93,11 @@ export function SubmitForm({
           setSearchResults(results);
         }
       } catch {
-        // Search is best-effort; pin-drop still works.
+        // Best-effort.
       }
     }, 1100);
   }
 
-  /**
-   * Reverse-geocode the given coords and fill the location text box.
-   * Failure is non-fatal: we fall back to a "lat, lng" string so the
-   * required field is still satisfied and the form remains submittable.
-   */
   const reverseGeocodeInto = useCallback(async (pos: LatLng) => {
     const seq = ++reverseSeq.current;
     const fallback = `${pos.lat.toFixed(5)}, ${pos.lng.toFixed(5)}`;
@@ -104,7 +105,7 @@ export function SubmitForm({
       const res = await fetch(
         `/api/geocode/reverse?lat=${pos.lat}&lng=${pos.lng}`,
       );
-      if (seq !== reverseSeq.current) return; // a newer pin won
+      if (seq !== reverseSeq.current) return;
       if (res.ok) {
         const { result } = (await res.json()) as {
           result: ReverseGeocodeResult | null;
@@ -127,11 +128,9 @@ export function SubmitForm({
   function pickSearchResult(r: GeocodeResult) {
     const pos = { lat: r.lat, lng: r.lng };
     setPosition(pos);
-    setFlyTarget({ ...pos }); // fresh ref → triggers map flyTo
+    setFlyTarget({ ...pos });
     setLocationText(r.display_name);
     setSearchResults([]);
-    // Bump the reverse-geocode sequence so any in-flight reverse call
-    // from a previous pin can't clobber the address we just wrote.
     reverseSeq.current++;
   }
 
@@ -179,7 +178,6 @@ export function SubmitForm({
     const form = event.currentTarget;
     const data = new FormData(form);
 
-    // Honeypot: bots fill hidden fields; pretend success.
     if ((data.get("website") as string)?.length) {
       setState("done");
       return;
@@ -189,13 +187,10 @@ export function SubmitForm({
       return;
     }
 
-    // Coordinate fallback chain: dropped pin → parsed Google Maps URL → null.
     const gmapsLink = (data.get("gmaps_link") as string).trim();
     const fromGmaps = gmapsLink ? parseGmapsCoords(gmapsLink) : null;
     const coords = position ?? fromGmaps;
 
-    // Google Maps link is required so every venue card always has a
-    // "Open in Maps" target — no OSM fallback for new submissions.
     if (!gmapsLink) {
       setError(
         "Paste a Google Maps link — it's how visitors will open directions to your venue.",
@@ -203,8 +198,6 @@ export function SubmitForm({
       return;
     }
 
-    // Location is required: at least typed text, a pin, or a parsed
-    // gmaps coordinate. Address/city/country remain optional.
     if (!locationText.trim() && !coords) {
       setError(
         "Add a location — type a place, drop a pin on the map, or use Add location.",
@@ -215,16 +208,10 @@ export function SubmitForm({
     setState("saving");
     const supabase = createClient();
 
-    // Track the creator if signed in, so they can edit the venue later.
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    const createdBy = user?.id ?? null;
-
     try {
-      const { data: venue, error: insertError } = await supabase
+      const { error: updateError } = await supabase
         .from("venues")
-        .insert({
+        .update({
           name: (data.get("name") as string).trim(),
           description: (data.get("description") as string).trim(),
           address: (data.get("address") as string).trim() || null,
@@ -245,14 +232,14 @@ export function SubmitForm({
           food_available: data.get("food_available") === "on",
           family_friendly: data.get("family_friendly") === "on",
           screens_all_matches: screensAll,
-          created_by: createdBy,
-          gmaps_link: (data.get("gmaps_link") as string).trim(),
+          gmaps_link: gmapsLink,
         })
-        .select("id")
-        .single();
-      if (insertError) throw new Error(insertError.message);
+        .eq("id", venue.id);
+      if (updateError) throw new Error(updateError.message);
 
-      if (!screensAll && venue) {
+      // Sync venue_matches
+      await supabase.from("venue_matches").delete().eq("venue_id", venue.id);
+      if (!screensAll && selectedMatches.size > 0) {
         const { error: matchError } = await supabase
           .from("venue_matches")
           .insert(
@@ -265,6 +252,7 @@ export function SubmitForm({
       }
 
       setState("done");
+      router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong.");
       setState("error");
@@ -274,15 +262,15 @@ export function SubmitForm({
   if (state === "done") {
     return (
       <div className="rounded-xl border border-line bg-blue-wash/60 p-8 text-center">
-        <p className="display text-xl text-blue-deep">Added</p>
+        <p className="display text-xl text-blue-deep">Saved</p>
         <p className="mx-auto mt-2 max-w-md text-sm text-ink-soft">
-          Thanks! Your venue is now live and visible to everyone.
+          Your changes are live.
         </p>
         <Link
-          href="/"
+          href={`/venues/${venue.id}`}
           className="mt-4 inline-block text-sm font-semibold text-blue-deep underline"
         >
-          Back to venues
+          Back to venue
         </Link>
       </div>
     );
@@ -290,7 +278,6 @@ export function SubmitForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Honeypot — hidden from real users */}
       <input
         type="text"
         name="website"
@@ -307,7 +294,7 @@ export function SubmitForm({
             name="name"
             required
             maxLength={120}
-            placeholder="e.g. Riverside Fan Zone"
+            defaultValue={venue.name}
             className={inputClass}
           />
         </label>
@@ -318,13 +305,18 @@ export function SubmitForm({
             required
             rows={3}
             maxLength={1000}
-            placeholder="What's the vibe? Screen size, atmosphere, when to arrive…"
+            defaultValue={venue.description}
             className={inputClass}
           />
         </label>
         <label className={labelClass}>
           Venue type *
-          <select name="venue_type" required className={inputClass}>
+          <select
+            name="venue_type"
+            required
+            defaultValue={venue.venue_type}
+            className={inputClass}
+          >
             {Object.entries(VENUE_TYPE_LABELS).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -334,7 +326,12 @@ export function SubmitForm({
         </label>
         <label className={labelClass}>
           Indoor / outdoor *
-          <select name="indoor_outdoor" required className={inputClass}>
+          <select
+            name="indoor_outdoor"
+            required
+            defaultValue={venue.indoor_outdoor}
+            className={inputClass}
+          >
             <option value="indoor">Indoor</option>
             <option value="outdoor">Outdoor</option>
             <option value="both">Both</option>
@@ -347,7 +344,7 @@ export function SubmitForm({
             type="number"
             min={1}
             max={500000}
-            placeholder="e.g. 250"
+            defaultValue={venue.capacity_estimate ?? ""}
             className={inputClass}
           />
         </label>
@@ -361,7 +358,12 @@ export function SubmitForm({
             ] as const
           ).map(([name, label]) => (
             <label key={name} className="flex items-center gap-1.5">
-              <input type="checkbox" name={name} className="accent-blue" />
+              <input
+                type="checkbox"
+                name={name}
+                defaultChecked={venue[name] as boolean}
+                className="accent-blue"
+              />
               {label}
             </label>
           ))}
@@ -434,15 +436,30 @@ export function SubmitForm({
         <div className="mt-3 grid gap-4 sm:grid-cols-3">
           <label className={`${labelClass} sm:col-span-1`}>
             Address
-            <input name="address" maxLength={200} className={inputClass} />
+            <input
+              name="address"
+              maxLength={200}
+              defaultValue={venue.address ?? ""}
+              className={inputClass}
+            />
           </label>
           <label className={labelClass}>
             City
-            <input name="city" maxLength={80} className={inputClass} />
+            <input
+              name="city"
+              maxLength={80}
+              defaultValue={venue.city ?? ""}
+              className={inputClass}
+            />
           </label>
           <label className={labelClass}>
             Country
-            <input name="country" maxLength={80} className={inputClass} />
+            <input
+              name="country"
+              maxLength={80}
+              defaultValue={venue.country ?? ""}
+              className={inputClass}
+            />
           </label>
         </div>
         <label className={`${labelClass} mt-3 block`}>
@@ -451,7 +468,7 @@ export function SubmitForm({
             name="gmaps_link"
             type="url"
             required
-            placeholder="https://maps.app.goo.gl/…"
+            defaultValue={venue.gmaps_link}
             className={inputClass}
           />
           <span className="mt-1 block text-xs font-normal text-ink-faint">
@@ -521,14 +538,22 @@ export function SubmitForm({
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={state === "saving"}
-        className="btn-primary press inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 disabled:opacity-60 sm:w-auto sm:px-8"
-      >
-        {state === "saving" && <FootballLoader size="sm" variant="spin" />}
-        {state === "saving" ? "Adding…" : "Add venue"}
-      </button>
+      <div className="flex gap-3">
+        <Link
+          href={`/venues/${venue.id}`}
+          className="press inline-flex w-full items-center justify-center gap-2 rounded-full border border-line bg-surface px-4 py-3 text-sm font-semibold text-ink-soft hover:bg-blue-wash sm:w-auto sm:px-8"
+        >
+          Cancel
+        </Link>
+        <button
+          type="submit"
+          disabled={state === "saving"}
+          className="btn-primary press inline-flex w-full items-center justify-center gap-2 rounded-full px-4 py-3 disabled:opacity-60 sm:w-auto sm:px-8"
+        >
+          {state === "saving" && <FootballLoader size="sm" variant="spin" />}
+          {state === "saving" ? "Saving…" : "Save changes"}
+        </button>
+      </div>
     </form>
   );
 }
